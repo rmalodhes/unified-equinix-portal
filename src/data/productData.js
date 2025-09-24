@@ -1,710 +1,810 @@
-import { 
+import {
   Building,
   Server,
   Cable,
   Network,
   Zap,
   Globe,
-  MapPin
-} from 'lucide-react';
+  MapPin,
+} from "lucide-react";
 
 export const productData = {
-  'secure-cabinet': {
-    name: 'Secure Cabinet Express',
-    category: 'Colocation',
+  "secure-cabinet": {
+    name: "Secure Cabinet Express",
+    category: "Colocation",
     icon: Building,
-    description: 'High-security cabinet space with 24/7 access',
+    description: "High-security cabinet space with 24/7 access",
     basePrice: 850,
     essentialTemplates: [
       {
-        id: 'secure-cabinet-starter',
-        name: 'Startup Essentials',
-        tier: 'basic',
+        id: "secure-cabinet-starter",
+        name: "Compact Cabinet",
         popular: false,
-        description: 'Perfect for startups and small businesses just getting started with colocation',
-        pricing: '$850',
-        useCase: 'Small teams, development environments, basic infrastructure',
+        description:
+          "Perfect for small deployments and development environments",
+        pricing: "$850",
+        useCase: "Small teams, development environments, basic infrastructure",
         essentialDetails: [
-          { label: 'Port Speed', value: '10Gbps' },
-          { label: 'VLANs', value: '50' },
-          { label: 'Cloud Providers', value: 'All major CSPs' },
-          { label: 'Setup Time', value: '1 hour' }
+          { label: "Cabinet Dimensions", value: "600mm × 800mm × 2000mm" },
+          { label: "Circuit Type", value: "Single Phase Circuit" },
+          { label: "PDU", value: "PDU:P24E20G" },
+          { label: "Setup Time", value: "2 hours" },
         ],
         keyFeatures: [
-          '10Gbps high-performance port',
-          'Up to 50 VLAN configurations',
-          'Access to all major cloud providers',
-          'Advanced monitoring and analytics',
-          'Priority technical support',
-          'API access for automation',
-          'Burst capability up to 20Gbps',
-          'Multi-cloud orchestration tools'
+          "Compact 600mm width cabinet",
+          "Single phase power circuit",
+          "Basic PDU configuration",
+          "24/7 secure access",
+          "Environmental monitoring",
+          "Remote hands support",
         ],
         configuration: {
-          portSpeed: '10G',
-          vlanCount: '50'
-        }
+          cabinetDimensions: "600mm × 800mm × 2000mm",
+          circuitType: "Single Phase Circuit",
+          pdu: "PDU:P24E20G",
+        },
       },
       {
-        id: 'fabric-ports-enterprise',
-        name: 'Enterprise Cloud',
-        tier: 'enterprise',
-        popular: false,
-        description: 'Maximum performance cloud connectivity for enterprise scale',
-        pricing: '$1,800',
-        useCase: 'Enterprise applications, high-frequency trading, big data analytics',
+        id: "secure-cabinet-standard",
+        name: "Standard Cabinet",
+        popular: true,
+        description: "Ideal for growing business infrastructure needs",
+        pricing: "$1,200",
+        useCase:
+          "Medium businesses, production environments, standard deployments",
         essentialDetails: [
-          { label: 'Port Speed', value: '100Gbps' },
-          { label: 'VLANs', value: '100' },
-          { label: 'Cloud Providers', value: 'Global ecosystem' },
-          { label: 'Setup Time', value: '30 minutes' }
+          { label: "Cabinet Dimensions", value: "600mm × 1200mm × 2200mm" },
+          { label: "Circuit Type", value: "Single Phase Circuit" },
+          { label: "PDU", value: "PDU:P36E35G" },
+          { label: "Setup Time", value: "1 hour" },
         ],
         keyFeatures: [
-          '100Gbps ultra-high-speed port',
-          'Maximum 100 VLAN configurations',
-          'Global cloud provider ecosystem',
-          'Real-time performance analytics',
-          'Dedicated support engineer',
-          'Advanced API and SDN capabilities',
-          'Unlimited burst capability',
-          'Custom integration support',
-          'SLA with performance guarantees'
+          "Standard 600mm × 1200mm cabinet",
+          "Single phase power circuit",
+          "Enhanced PDU with monitoring",
+          "24/7 secure access",
+          "Advanced environmental controls",
+          "Priority remote hands support",
+          "Cable management system",
         ],
         configuration: {
-          portSpeed: '100G',
-          vlanCount: '100'
-        }
-      }
+          cabinetDimensions: "600mm × 1200mm × 2200mm",
+          circuitType: "Single Phase Circuit",
+          pdu: "PDU:P36E35G",
+        },
+      },
+      {
+        id: "secure-cabinet-enterprise",
+        name: "Enterprise Cabinet",
+        popular: false,
+        description: "High-density solution for enterprise-scale deployments",
+        pricing: "$1,800",
+        useCase:
+          "Large enterprises, mission-critical applications, high-density deployments",
+        essentialDetails: [
+          { label: "Cabinet Dimensions", value: "800mm × 1200mm × 2200mm" },
+          { label: "Circuit Type", value: "Three Phase Circuit" },
+          { label: "PDU", value: "PDU:P48E50G" },
+          { label: "Setup Time", value: "30 minutes" },
+        ],
+        keyFeatures: [
+          "Large 800mm × 1200mm cabinet",
+          "Three phase power circuit",
+          "Enterprise-grade PDU with redundancy",
+          "24/7 secure access",
+          "Advanced environmental monitoring",
+          "Dedicated support engineer",
+          "Premium cable management",
+          "Redundant cooling systems",
+          "Enhanced security features",
+        ],
+        configuration: {
+          cabinetDimensions: "800mm × 1200mm × 2200mm",
+          circuitType: "Three Phase Circuit",
+          pdu: "PDU:P48E50G",
+        },
+      },
     ],
     templates: [
       {
-        id: 'fabric-ports-basic',
-        name: 'Basic Fabric Port',
-        description: 'Entry-level cloud connectivity',
-        pricing: '$200/month',
-        features: ['1Gbps Port', '10 VLANs', 'Basic Support'],
+        id: "secure-cabinet-compact",
+        name: "Compact Cabinet Template",
+        description: "Small footprint cabinet for basic needs",
+        pricing: "$850/month",
+        features: ["600mm Width", "Single Phase", "Basic PDU"],
         configuration: {
-          portSpeed: '1G',
-          vlanCount: '10'
-        }
+          cabinetDimensions: "600mm × 800mm × 2000mm",
+          circuitType: "Single Phase Circuit",
+          pdu: "PDU:P24E20G",
+        },
       },
       {
-        id: 'fabric-ports-standard',
-        name: 'Standard Fabric Port',
-        description: 'Enhanced cloud connectivity for growing needs',
-        pricing: '$450/month',
-        features: ['10Gbps Port', '50 VLANs', 'Standard Support'],
+        id: "secure-cabinet-standard",
+        name: "Standard Cabinet Template",
+        description: "Standard cabinet for typical deployments",
+        pricing: "$1,200/month",
+        features: ["600mm × 1200mm", "Single Phase", "Enhanced PDU"],
         configuration: {
-          portSpeed: '10G',
-          vlanCount: '50'
-        }
+          cabinetDimensions: "600mm × 1200mm × 2200mm",
+          circuitType: "Single Phase Circuit",
+          pdu: "PDU:P36E35G",
+        },
       },
       {
-        id: 'fabric-ports-premium',
-        name: 'Premium Fabric Port',
-        description: 'Enterprise-grade cloud connectivity',
-        pricing: '$1,200/month',
-        features: ['100Gbps Port', '100 VLANs', 'Premium Support'],
+        id: "secure-cabinet-enterprise",
+        name: "Enterprise Cabinet Template",
+        description: "Large cabinet for high-density deployments",
+        pricing: "$1,800/month",
+        features: ["800mm × 1200mm", "Three Phase", "Enterprise PDU"],
         configuration: {
-          portSpeed: '100G',
-          vlanCount: '100'
-        }
-      }
+          cabinetDimensions: "800mm × 1200mm × 2200mm",
+          circuitType: "Three Phase Circuit",
+          pdu: "PDU:P48E50G",
+        },
+      },
     ],
     fields: [
-      { 
-        name: 'portSpeed', 
-        label: 'Port Speed', 
-        type: 'select', 
-        options: ['1G', '10G', '100G'],
-        required: true
+      {
+        name: "cabinetDimensions",
+        label: "Cabinet Dimensions",
+        type: "select",
+        options: [
+          "600mm × 800mm × 2000mm",
+          "600mm × 1200mm × 2200mm",
+          "800mm × 1200mm × 2200mm",
+        ],
+        required: true,
       },
-      { 
-        name: 'vlanCount', 
-        label: 'VLAN Count', 
-        type: 'number', 
-        min: 1, 
-        max: 100,
-        required: true
-      }
-    ]
+      {
+        name: "circuitType",
+        label: "Circuit Type",
+        type: "select",
+        options: ["Single Phase Circuit", "Three Phase Circuit"],
+        required: true,
+      },
+      {
+        name: "pdu",
+        label: "PDU",
+        type: "select",
+        options: ["PDU:P24E20G", "PDU:P36E35G", "PDU:P48E50G"],
+        required: true,
+      },
+    ],
   },
-  'patch-panel': {
-    name: 'Patch Panel',
-    category: 'Colocation',
+  "patch-panel": {
+    name: "Patch Panel",
+    category: "Colocation",
     icon: Server,
-    description: 'Flexible patch panel solutions',
+    description: "Flexible patch panel solutions",
     basePrice: 120,
     essentialTemplates: [
       {
-        id: 'patch-panel-compact',
-        name: 'Compact Office',
-        tier: 'basic',
+        id: "patch-panel-compact",
+        name: "Compact Office",
         popular: false,
-        description: 'Perfect for small office environments with basic connectivity needs',
-        pricing: '$120',
-        useCase: 'Small offices, home offices, basic network infrastructure',
+        description:
+          "Perfect for small office environments with basic connectivity needs",
+        pricing: "$120",
+        useCase: "Small offices, home offices, basic network infrastructure",
         essentialDetails: [
-          { label: 'Ports', value: '12 ports' },
-          { label: 'Connector Type', value: 'RJ45' },
-          { label: 'Category', value: 'Cat6' },
-          { label: 'Installation', value: '2 hours' }
+          { label: "Ports", value: "12 ports" },
+          { label: "Connector Type", value: "RJ45" },
+          { label: "Mounting Type", value: "Wall Mount" },
+          { label: "Cable Category", value: "Cat6" },
         ],
         keyFeatures: [
-          '12-port RJ45 configuration',
-          'Category 6 cable support',
-          'Basic labeling included',
-          'Standard mounting hardware',
-          'Basic installation service'
+          "12-port RJ45 configuration",
+          "Category 6 cable support",
+          "Wall mounting hardware",
+          "Basic labeling included",
+          "Standard installation service",
         ],
         configuration: {
-          ports: '12',
-          type: 'RJ45'
-        }
+          ports: "12",
+          type: "RJ45",
+          mountingType: "Wall Mount",
+          cableCategory: "Cat6",
+        },
       },
       {
-        id: 'patch-panel-standard',
-        name: 'Business Standard',
-        tier: 'business',
+        id: "patch-panel-standard",
+        name: "Business Standard",
         popular: true,
-        description: 'Ideal for growing business network infrastructure needs',
-        pricing: '$220',
-        useCase: 'Medium businesses, branch offices, structured cabling systems',
+        description: "Ideal for growing business network infrastructure needs",
+        pricing: "$220",
+        useCase:
+          "Medium businesses, branch offices, structured cabling systems",
         essentialDetails: [
-          { label: 'Ports', value: '24 ports' },
-          { label: 'Connector Type', value: 'LC' },
-          { label: 'Category', value: 'Fiber Ready' },
-          { label: 'Installation', value: '1 hour' }
+          { label: "Ports", value: "24 ports" },
+          { label: "Connector Type", value: "LC" },
+          { label: "Mounting Type", value: "1U Rack Mount" },
+          { label: "Cable Category", value: "Fiber/Cat6A" },
         ],
         keyFeatures: [
-          '24-port LC fiber configuration',
-          'Single and multi-mode support',
-          'Professional labeling system',
-          'Premium mounting hardware',
-          'Professional installation',
-          'Cable management included',
-          'Testing and certification'
+          "24-port LC fiber configuration",
+          "Single and multi-mode support",
+          "1U rack mounting system",
+          "Professional labeling system",
+          "Cable management included",
+          "Testing and certification",
         ],
         configuration: {
-          ports: '24',
-          type: 'LC'
-        }
+          ports: "24",
+          type: "LC",
+          mountingType: "1U Rack Mount",
+          cableCategory: "Fiber/Cat6A",
+        },
       },
       {
-        id: 'patch-panel-enterprise',
-        name: 'Enterprise High-Density',
-        tier: 'enterprise',
+        id: "patch-panel-enterprise",
+        name: "Enterprise High-Density",
         popular: false,
-        description: 'High-density solution for large-scale network deployments',
-        pricing: '$420',
-        useCase: 'Data centers, large enterprises, high-density applications',
+        description:
+          "High-density solution for large-scale network deployments",
+        pricing: "$420",
+        useCase: "Data centers, large enterprises, high-density applications",
         essentialDetails: [
-          { label: 'Ports', value: '48 ports' },
-          { label: 'Connector Type', value: 'SC' },
-          { label: 'Category', value: 'High Density' },
-          { label: 'Installation', value: '30 minutes' }
+          { label: "Ports", value: "48 ports" },
+          { label: "Connector Type", value: "SC" },
+          { label: "Mounting Type", value: "2U Rack Mount" },
+          { label: "Cable Category", value: "OM4 Fiber" },
         ],
         keyFeatures: [
-          '48-port high-density SC configuration',
-          'Advanced fiber management',
-          'Color-coded labeling system',
-          'Enterprise mounting solutions',
-          'Express installation service',
-          'Advanced cable management',
-          'Full testing and documentation',
-          'Ongoing maintenance support',
-          'Performance monitoring'
+          "48-port high-density SC configuration",
+          "OM4 multimode fiber support",
+          "2U rack mounting system",
+          "Advanced cable management",
+          "Color-coded labeling system",
+          "Express installation service",
+          "Performance monitoring",
         ],
         configuration: {
-          ports: '48',
-          type: 'SC'
-        }
-      }
+          ports: "48",
+          type: "SC",
+          mountingType: "2U Rack Mount",
+          cableCategory: "OM4 Fiber",
+        },
+      },
     ],
     templates: [
       {
-        id: 'patch-panel-small',
-        name: 'Small Office Template',
-        description: 'Perfect for small office connectivity needs',
-        pricing: '$120/month',
-        features: ['12 Ports', 'RJ45 Connectors', 'Cat6 Ready'],
+        id: "patch-panel-small",
+        name: "Small Office Template",
+        description: "Perfect for small office connectivity needs",
+        pricing: "$120/month",
+        features: ["12 Ports", "RJ45 Connectors", "Cat6 Ready"],
         configuration: {
-          ports: '12',
-          type: 'RJ45'
-        }
+          ports: "12",
+          type: "RJ45",
+        },
       },
       {
-        id: 'patch-panel-medium',
-        name: 'Medium Business Template',
-        description: 'Ideal for growing business infrastructure',
-        pricing: '$180/month',
-        features: ['24 Ports', 'LC Connectors', 'Fiber Ready'],
+        id: "patch-panel-medium",
+        name: "Medium Business Template",
+        description: "Ideal for growing business infrastructure",
+        pricing: "$180/month",
+        features: ["24 Ports", "LC Connectors", "Fiber Ready"],
         configuration: {
-          ports: '24',
-          type: 'LC'
-        }
+          ports: "24",
+          type: "LC",
+        },
       },
       {
-        id: 'patch-panel-enterprise',
-        name: 'Enterprise Template',
-        description: 'High-density solution for large deployments',
-        pricing: '$300/month',
-        features: ['48 Ports', 'SC Connectors', 'High Density'],
+        id: "patch-panel-enterprise",
+        name: "Enterprise Template",
+        description: "High-density solution for large deployments",
+        pricing: "$300/month",
+        features: ["48 Ports", "SC Connectors", "High Density"],
         configuration: {
-          ports: '48',
-          type: 'SC'
-        }
-      }
+          ports: "48",
+          type: "SC",
+        },
+      },
     ],
     fields: [
-      { 
-        name: 'ports', 
-        label: 'Number of Ports', 
-        type: 'select', 
-        options: ['12', '24', '48'],
-        required: true
+      {
+        name: "ports",
+        label: "Number of Ports",
+        type: "select",
+        options: ["12", "24", "48"],
+        required: true,
       },
-      { 
-        name: 'type', 
-        label: 'Connector Type', 
-        type: 'select', 
-        options: ['RJ45', 'LC', 'SC'],
-        required: true
-      }
-    ]
+      {
+        name: "type",
+        label: "Connector Type",
+        type: "select",
+        options: ["RJ45", "LC", "SC"],
+        required: true,
+      },
+      {
+        name: "mountingType",
+        label: "Mounting Type",
+        type: "select",
+        options: ["Wall Mount", "1U Rack Mount", "2U Rack Mount"],
+        required: true,
+      },
+      {
+        name: "cableCategory",
+        label: "Cable Category",
+        type: "select",
+        options: ["Cat6", "Fiber/Cat6A", "OM4 Fiber"],
+        required: true,
+      },
+    ],
   },
-  'fiber-connect': {
-    name: 'Fiber Connect',
-    category: 'Interconnection',
+  "fiber-connect": {
+    name: "Fiber Connect",
+    category: "Interconnection",
     icon: Network,
-    description: 'High-speed fiber connectivity solutions',
+    description: "High-speed fiber connectivity solutions",
     basePrice: 500,
     essentialTemplates: [
       {
-        id: 'fiber-connect-local',
-        name: 'Local Connect',
-        tier: 'basic',
+        id: "fiber-connect-local",
+        name: "Local Connect",
         popular: false,
-        description: 'Standard 1 Gigabit fiber for local connectivity needs',
-        pricing: '$500',
-        useCase: 'Local connections, small business internet, basic fiber needs',
+        description: "Standard 1 Gigabit fiber for local connectivity needs",
+        pricing: "$500",
+        useCase:
+          "Local connections, small business internet, basic fiber needs",
         essentialDetails: [
-          { label: 'Speed', value: '1Gbps' },
-          { label: 'Distance', value: 'Up to 10km' },
-          { label: 'SLA', value: '99.9%' },
-          { label: 'Installation', value: '5 days' }
+          { label: "Speed", value: "1Gbps" },
+          { label: "Fiber Mode", value: "Single Mode" },
+          { label: "Connector Type", value: "LC/UPC" },
+          { label: "Wavelength", value: "1310nm" },
         ],
         keyFeatures: [
-          '1Gbps dedicated bandwidth',
-          'Single-mode fiber infrastructure',
-          'Standard SLA coverage',
-          'Basic monitoring included',
-          'Standard technical support'
+          "1Gbps dedicated bandwidth",
+          "Single-mode fiber infrastructure",
+          "LC/UPC connector standard",
+          "Standard SLA coverage",
+          "Basic monitoring included",
         ],
         configuration: {
-          speed: '1G',
-          distance: '10'
-        }
+          speed: "1G",
+          distance: "10",
+          fiberMode: "Single Mode",
+          connectorType: "LC/UPC",
+          wavelength: "1310nm",
+        },
       },
       {
-        id: 'fiber-connect-regional',
-        name: 'Regional Connect',
-        tier: 'business',
+        id: "fiber-connect-regional",
+        name: "Regional Connect",
         popular: true,
-        description: 'High-performance 10 Gigabit connection for business applications',
-        pricing: '$1,400',
-        useCase: 'Regional connectivity, business applications, video streaming',
+        description:
+          "High-performance 10 Gigabit connection for business applications",
+        pricing: "$1,400",
+        useCase:
+          "Regional connectivity, business applications, video streaming",
         essentialDetails: [
-          { label: 'Speed', value: '10Gbps' },
-          { label: 'Distance', value: 'Up to 50km' },
-          { label: 'SLA', value: '99.95%' },
-          { label: 'Installation', value: '3 days' }
+          { label: "Speed", value: "10Gbps" },
+          { label: "Fiber Mode", value: "Single Mode" },
+          { label: "Connector Type", value: "LC/APC" },
+          { label: "Wavelength", value: "1550nm" },
         ],
         keyFeatures: [
-          '10Gbps high-speed connection',
-          'Extended distance capability',
-          'Enhanced SLA with faster response',
-          'Advanced monitoring and alerts',
-          'Priority technical support',
-          'Burst capability available',
-          'Performance reporting'
+          "10Gbps high-speed connection",
+          "Single-mode fiber with APC connectors",
+          "Extended distance capability",
+          "Advanced monitoring and alerts",
+          "Priority technical support",
+          "Performance reporting",
         ],
         configuration: {
-          speed: '10G',
-          distance: '50'
-        }
+          speed: "10G",
+          distance: "50",
+          fiberMode: "Single Mode",
+          connectorType: "LC/APC",
+          wavelength: "1550nm",
+        },
       },
       {
-        id: 'fiber-connect-nationwide',
-        name: 'Nationwide Connect',
-        tier: 'enterprise',
+        id: "fiber-connect-nationwide",
+        name: "Nationwide Connect",
         popular: false,
-        description: 'Ultra-high-speed 100 Gigabit for enterprise applications',
-        pricing: '$4,200',
-        useCase: 'Enterprise backbone, data center interconnect, mission-critical apps',
+        description: "Ultra-high-speed 100 Gigabit for enterprise applications",
+        pricing: "$4,200",
+        useCase:
+          "Enterprise backbone, data center interconnect, mission-critical apps",
         essentialDetails: [
-          { label: 'Speed', value: '100Gbps' },
-          { label: 'Distance', value: 'Up to 100km' },
-          { label: 'SLA', value: '99.99%' },
-          { label: 'Installation', value: '24 hours' }
+          { label: "Speed", value: "100Gbps" },
+          { label: "Fiber Mode", value: "Single Mode" },
+          { label: "Connector Type", value: "MPO/APC" },
+          { label: "Wavelength", value: "CWDM/DWDM" },
         ],
         keyFeatures: [
-          '100Gbps ultra-high-speed',
-          'Maximum distance coverage',
-          'Premium SLA with guarantees',
-          'Real-time performance monitoring',
-          'Dedicated support engineer',
-          'Redundancy options available',
-          'Custom routing capabilities',
-          'Enterprise-grade security',
-          '24/7 NOC monitoring'
+          "100Gbps ultra-high-speed",
+          "MPO/APC connector for high density",
+          "CWDM/DWDM wavelength support",
+          "Maximum distance coverage",
+          "Real-time performance monitoring",
+          "Dedicated support engineer",
+          "Enterprise-grade security",
         ],
         configuration: {
-          speed: '100G',
-          distance: '100'
-        }
-      }
+          speed: "100G",
+          distance: "100",
+          fiberMode: "Single Mode",
+          connectorType: "MPO/APC",
+          wavelength: "CWDM/DWDM",
+        },
+      },
     ],
     templates: [
       {
-        id: 'fiber-connect-1g',
-        name: '1G Fiber Connect',
-        description: 'Standard 1 Gigabit fiber connection',
-        pricing: '$500/month',
-        features: ['1Gbps Speed', 'Up to 10km Distance', 'Standard SLA'],
+        id: "fiber-connect-1g",
+        name: "1G Fiber Connect",
+        description: "Standard 1 Gigabit fiber connection",
+        pricing: "$500/month",
+        features: ["1Gbps Speed", "Up to 10km Distance", "Standard SLA"],
         configuration: {
-          speed: '1G',
-          distance: '10'
-        }
+          speed: "1G",
+          distance: "10",
+        },
       },
       {
-        id: 'fiber-connect-10g',
-        name: '10G Fiber Connect',
-        description: 'High-performance 10 Gigabit connection',
-        pricing: '$1,200/month',
-        features: ['10Gbps Speed', 'Up to 50km Distance', 'Premium SLA'],
+        id: "fiber-connect-10g",
+        name: "10G Fiber Connect",
+        description: "High-performance 10 Gigabit connection",
+        pricing: "$1,200/month",
+        features: ["10Gbps Speed", "Up to 50km Distance", "Premium SLA"],
         configuration: {
-          speed: '10G',
-          distance: '50'
-        }
+          speed: "10G",
+          distance: "50",
+        },
       },
       {
-        id: 'fiber-connect-100g',
-        name: '100G Fiber Connect',
-        description: 'Ultra-high-speed 100 Gigabit connection',
-        pricing: '$3,500/month',
-        features: ['100Gbps Speed', 'Up to 100km Distance', 'Enterprise SLA'],
+        id: "fiber-connect-100g",
+        name: "100G Fiber Connect",
+        description: "Ultra-high-speed 100 Gigabit connection",
+        pricing: "$3,500/month",
+        features: ["100Gbps Speed", "Up to 100km Distance", "Enterprise SLA"],
         configuration: {
-          speed: '100G',
-          distance: '100'
-        }
-      }
+          speed: "100G",
+          distance: "100",
+        },
+      },
     ],
     fields: [
-      { 
-        name: 'speed', 
-        label: 'Speed', 
-        type: 'select', 
-        options: ['1G', '10G', '100G'],
-        required: true
+      {
+        name: "speed",
+        label: "Speed",
+        type: "select",
+        options: ["1G", "10G", "100G"],
+        required: true,
       },
-      { 
-        name: 'distance', 
-        label: 'Distance (km)', 
-        type: 'number', 
-        min: 1, 
+      {
+        name: "distance",
+        label: "Distance (km)",
+        type: "number",
+        min: 1,
         max: 100,
-        required: true
-      }
-    ]
+        required: true,
+      },
+      {
+        name: "fiberMode",
+        label: "Fiber Mode",
+        type: "select",
+        options: ["Single Mode", "Multimode"],
+        required: true,
+      },
+      {
+        name: "connectorType",
+        label: "Connector Type",
+        type: "select",
+        options: ["LC/UPC", "LC/APC", "MPO/APC"],
+        required: true,
+      },
+      {
+        name: "wavelength",
+        label: "Wavelength",
+        type: "select",
+        options: ["1310nm", "1550nm", "CWDM/DWDM"],
+        required: true,
+      },
+    ],
   },
-  'metro-connect': {
-    name: 'Metro Connect',
-    category: 'Interconnection',
+  "metro-connect": {
+    name: "Metro Connect",
+    category: "Interconnection",
     icon: Globe,
-    description: 'Metro area network connections',
+    description: "Metro area network connections",
     basePrice: 750,
     essentialTemplates: [
       {
-        id: 'metro-connect-basic',
-        name: 'Metro Basic',
-        tier: 'basic',
+        id: "metro-connect-basic",
+        name: "Metro Basic",
+        tier: "basic",
         popular: false,
-        description: 'Standard metro area connectivity for small businesses',
-        pricing: '$750',
-        useCase: 'Small business branches, basic site connectivity',
+        description: "Standard metro area connectivity for small businesses",
+        pricing: "$750",
+        useCase: "Small business branches, basic site connectivity",
         essentialDetails: [
-          { label: 'Bandwidth', value: '100Mbps' },
-          { label: 'Redundancy', value: 'None' },
-          { label: 'Locations', value: '2-3 sites' },
-          { label: 'Setup', value: '7 days' }
+          { label: "Bandwidth", value: "100Mbps" },
+          { label: "Redundancy", value: "None" },
+          { label: "Locations", value: "2-3 sites" },
+          { label: "Setup", value: "7 days" },
         ],
         keyFeatures: [
-          '100Mbps dedicated bandwidth',
-          'Single path connectivity',
-          'Basic network monitoring',
-          'Standard support hours',
-          'Simple configuration'
+          "100Mbps dedicated bandwidth",
+          "Single path connectivity",
+          "Basic network monitoring",
+          "Standard support hours",
+          "Simple configuration",
         ],
         configuration: {
-          bandwidth: '100M',
-          redundancy: 'None'
-        }
+          bandwidth: "100M",
+          redundancy: "None",
+        },
       },
       {
-        id: 'metro-connect-business',
-        name: 'Metro Business',
-        tier: 'business',
+        id: "metro-connect-business",
+        name: "Metro Business",
+        tier: "business",
         popular: true,
-        description: 'Enhanced metro connectivity with backup for business continuity',
-        pricing: '$1,650',
-        useCase: 'Business networks, multi-site operations, backup connectivity',
+        description:
+          "Enhanced metro connectivity with backup for business continuity",
+        pricing: "$1,650",
+        useCase:
+          "Business networks, multi-site operations, backup connectivity",
         essentialDetails: [
-          { label: 'Bandwidth', value: '1Gbps' },
-          { label: 'Redundancy', value: 'Active/Standby' },
-          { label: 'Locations', value: '5-10 sites' },
-          { label: 'Setup', value: '3 days' }
+          { label: "Bandwidth", value: "1Gbps" },
+          { label: "Redundancy", value: "Active/Standby" },
+          { label: "Locations", value: "5-10 sites" },
+          { label: "Setup", value: "3 days" },
         ],
         keyFeatures: [
-          '1Gbps high-speed connectivity',
-          'Active/Standby redundancy',
-          'Advanced network monitoring',
-          'Business hours priority support',
-          'Automatic failover capability',
-          'Network performance reporting',
-          'Quality of Service (QoS) controls'
+          "1Gbps high-speed connectivity",
+          "Active/Standby redundancy",
+          "Advanced network monitoring",
+          "Business hours priority support",
+          "Automatic failover capability",
+          "Network performance reporting",
+          "Quality of Service (QoS) controls",
         ],
         configuration: {
-          bandwidth: '1G',
-          redundancy: 'Active/Standby'
-        }
+          bandwidth: "1G",
+          redundancy: "Active/Standby",
+        },
       },
       {
-        id: 'metro-connect-enterprise',
-        name: 'Metro Enterprise',
-        tier: 'enterprise',
+        id: "metro-connect-enterprise",
+        name: "Metro Enterprise",
+        tier: "enterprise",
         popular: false,
-        description: 'High-performance metro with load balancing for enterprise scale',
-        pricing: '$3,200',
-        useCase: 'Large enterprises, mission-critical applications, high availability',
+        description:
+          "High-performance metro with load balancing for enterprise scale",
+        pricing: "$3,200",
+        useCase:
+          "Large enterprises, mission-critical applications, high availability",
         essentialDetails: [
-          { label: 'Bandwidth', value: '10Gbps' },
-          { label: 'Redundancy', value: 'Load Balanced' },
-          { label: 'Locations', value: 'Unlimited' },
-          { label: 'Setup', value: '24 hours' }
+          { label: "Bandwidth", value: "10Gbps" },
+          { label: "Redundancy", value: "Load Balanced" },
+          { label: "Locations", value: "Unlimited" },
+          { label: "Setup", value: "24 hours" },
         ],
         keyFeatures: [
-          '10Gbps enterprise-grade bandwidth',
-          'Load-balanced redundancy',
-          'Real-time network analytics',
-          '24/7 enterprise support',
-          'Intelligent traffic distribution',
-          'Advanced security features',
-          'Custom SLA agreements',
-          'Dedicated account management',
-          'Proactive network optimization'
+          "10Gbps enterprise-grade bandwidth",
+          "Load-balanced redundancy",
+          "Real-time network analytics",
+          "24/7 enterprise support",
+          "Intelligent traffic distribution",
+          "Advanced security features",
+          "Custom SLA agreements",
+          "Dedicated account management",
+          "Proactive network optimization",
         ],
         configuration: {
-          bandwidth: '10G',
-          redundancy: 'Load Balanced'
-        }
-      }
+          bandwidth: "10G",
+          redundancy: "Load Balanced",
+        },
+      },
     ],
     templates: [
       {
-        id: 'metro-connect-basic',
-        name: 'Basic Metro Connect',
-        description: 'Standard metro area connectivity',
-        pricing: '$750/month',
-        features: ['100Mbps Bandwidth', 'Single Path', 'Standard SLA'],
+        id: "metro-connect-basic",
+        name: "Basic Metro Connect",
+        description: "Standard metro area connectivity",
+        pricing: "$750/month",
+        features: ["100Mbps Bandwidth", "Single Path", "Standard SLA"],
         configuration: {
-          bandwidth: '100M',
-          redundancy: 'None'
-        }
+          bandwidth: "100M",
+          redundancy: "None",
+        },
       },
       {
-        id: 'metro-connect-business',
-        name: 'Business Metro Connect',
-        description: 'Enhanced metro connectivity with backup',
-        pricing: '$1,400/month',
-        features: ['1Gbps Bandwidth', 'Active/Standby', 'Business SLA'],
+        id: "metro-connect-business",
+        name: "Business Metro Connect",
+        description: "Enhanced metro connectivity with backup",
+        pricing: "$1,400/month",
+        features: ["1Gbps Bandwidth", "Active/Standby", "Business SLA"],
         configuration: {
-          bandwidth: '1G',
-          redundancy: 'Active/Standby'
-        }
+          bandwidth: "1G",
+          redundancy: "Active/Standby",
+        },
       },
       {
-        id: 'metro-connect-enterprise',
-        name: 'Enterprise Metro Connect',
-        description: 'High-performance metro with load balancing',
-        pricing: '$2,800/month',
-        features: ['10Gbps Bandwidth', 'Load Balanced', 'Enterprise SLA'],
+        id: "metro-connect-enterprise",
+        name: "Enterprise Metro Connect",
+        description: "High-performance metro with load balancing",
+        pricing: "$2,800/month",
+        features: ["10Gbps Bandwidth", "Load Balanced", "Enterprise SLA"],
         configuration: {
-          bandwidth: '10G',
-          redundancy: 'Load Balanced'
-        }
-      }
+          bandwidth: "10G",
+          redundancy: "Load Balanced",
+        },
+      },
     ],
     fields: [
-      { 
-        name: 'bandwidth', 
-        label: 'Bandwidth', 
-        type: 'select', 
-        options: ['100M', '1G', '10G'],
-        required: true
+      {
+        name: "bandwidth",
+        label: "Bandwidth",
+        type: "select",
+        options: ["100M", "1G", "10G"],
+        required: true,
       },
-      { 
-        name: 'redundancy', 
-        label: 'Redundancy', 
-        type: 'select', 
-        options: ['None', 'Active/Standby', 'Load Balanced'],
-        required: true
-      }
-    ]
+      {
+        name: "redundancy",
+        label: "Redundancy",
+        type: "select",
+        options: ["None", "Active/Standby", "Load Balanced"],
+        required: true,
+      },
+    ],
   },
-  'campus-connect': {
-    name: 'Campus Connect',
-    category: 'Interconnection',
+  "campus-connect": {
+    name: "Campus Connect",
+    category: "Interconnection",
     icon: MapPin,
-    description: 'Campus-wide connectivity solutions',
+    description: "Campus-wide connectivity solutions",
     basePrice: 450,
     essentialTemplates: [
       {
-        id: 'campus-connect-compact',
-        name: 'Compact Campus',
-        tier: 'basic',
+        id: "campus-connect-compact",
+        name: "Compact Campus",
+        tier: "basic",
         popular: false,
-        description: 'Perfect for small campus environments and educational institutions',
-        pricing: '$450',
-        useCase: 'Small campuses, schools, research facilities',
+        description:
+          "Perfect for small campus environments and educational institutions",
+        pricing: "$450",
+        useCase: "Small campuses, schools, research facilities",
         essentialDetails: [
-          { label: 'Locations', value: '2-3 buildings' },
-          { label: 'Protocol', value: 'Ethernet' },
-          { label: 'Management', value: 'Basic' },
-          { label: 'Setup', value: '5 days' }
+          { label: "Locations", value: "2-3 buildings" },
+          { label: "Protocol", value: "Ethernet" },
+          { label: "Management", value: "Basic" },
+          { label: "Setup", value: "5 days" },
         ],
         keyFeatures: [
-          'Ethernet-based connectivity',
-          '2-3 building coverage',
-          'Basic network management',
-          'Standard support',
-          'Simple configuration'
+          "Ethernet-based connectivity",
+          "2-3 building coverage",
+          "Basic network management",
+          "Standard support",
+          "Simple configuration",
         ],
         configuration: {
-          locations: '2',
-          protocol: 'Ethernet'
-        }
+          locations: "2",
+          protocol: "Ethernet",
+        },
       },
       {
-        id: 'campus-connect-standard',
-        name: 'Standard Campus',
-        tier: 'business',
+        id: "campus-connect-standard",
+        name: "Standard Campus",
+        tier: "business",
         popular: true,
-        description: 'Ideal for growing campus infrastructure with advanced features',
-        pricing: '$980',
-        useCase: 'Medium campuses, corporate facilities, multi-building operations',
+        description:
+          "Ideal for growing campus infrastructure with advanced features",
+        pricing: "$980",
+        useCase:
+          "Medium campuses, corporate facilities, multi-building operations",
         essentialDetails: [
-          { label: 'Locations', value: '5-8 buildings' },
-          { label: 'Protocol', value: 'MPLS' },
-          { label: 'Management', value: 'Advanced' },
-          { label: 'Setup', value: '3 days' }
+          { label: "Locations", value: "5-8 buildings" },
+          { label: "Protocol", value: "MPLS" },
+          { label: "Management", value: "Advanced" },
+          { label: "Setup", value: "3 days" },
         ],
         keyFeatures: [
-          'MPLS protocol for reliability',
-          '5-8 building connectivity',
-          'Advanced network management',
-          'Priority technical support',
-          'Traffic prioritization',
-          'Network segmentation',
-          'Performance monitoring'
+          "MPLS protocol for reliability",
+          "5-8 building connectivity",
+          "Advanced network management",
+          "Priority technical support",
+          "Traffic prioritization",
+          "Network segmentation",
+          "Performance monitoring",
         ],
         configuration: {
-          locations: '5',
-          protocol: 'MPLS'
-        }
+          locations: "5",
+          protocol: "MPLS",
+        },
       },
       {
-        id: 'campus-connect-enterprise',
-        name: 'Enterprise Campus',
-        tier: 'enterprise',
+        id: "campus-connect-enterprise",
+        name: "Enterprise Campus",
+        tier: "enterprise",
         popular: false,
-        description: 'Enterprise campus with SD-WAN capabilities and unlimited scale',
-        pricing: '$1,850',
-        useCase: 'Large enterprises, university campuses, complex multi-site operations',
+        description:
+          "Enterprise campus with SD-WAN capabilities and unlimited scale",
+        pricing: "$1,850",
+        useCase:
+          "Large enterprises, university campuses, complex multi-site operations",
         essentialDetails: [
-          { label: 'Locations', value: '10+ buildings' },
-          { label: 'Protocol', value: 'SD-WAN' },
-          { label: 'Management', value: 'Enterprise' },
-          { label: 'Setup', value: '24 hours' }
+          { label: "Locations", value: "10+ buildings" },
+          { label: "Protocol", value: "SD-WAN" },
+          { label: "Management", value: "Enterprise" },
+          { label: "Setup", value: "24 hours" },
         ],
         keyFeatures: [
-          'SD-WAN technology',
-          'Unlimited building connectivity',
-          'Enterprise network management',
-          '24/7 dedicated support',
-          'Dynamic path selection',
-          'Advanced security integration',
-          'Cloud optimization',
-          'Custom policy management',
-          'Real-time analytics'
+          "SD-WAN technology",
+          "Unlimited building connectivity",
+          "Enterprise network management",
+          "24/7 dedicated support",
+          "Dynamic path selection",
+          "Advanced security integration",
+          "Cloud optimization",
+          "Custom policy management",
+          "Real-time analytics",
         ],
         configuration: {
-          locations: '10',
-          protocol: 'SD-WAN'
-        }
-      }
+          locations: "10",
+          protocol: "SD-WAN",
+        },
+      },
     ],
     templates: [
       {
-        id: 'campus-connect-small',
-        name: 'Small Campus Template',
-        description: 'Perfect for small campus environments',
-        pricing: '$450/month',
-        features: ['2-3 Locations', 'Ethernet Protocol', 'Basic Management'],
+        id: "campus-connect-small",
+        name: "Small Campus Template",
+        description: "Perfect for small campus environments",
+        pricing: "$450/month",
+        features: ["2-3 Locations", "Ethernet Protocol", "Basic Management"],
         configuration: {
-          locations: '2',
-          protocol: 'Ethernet'
-        }
+          locations: "2",
+          protocol: "Ethernet",
+        },
       },
       {
-        id: 'campus-connect-medium',
-        name: 'Medium Campus Template',
-        description: 'Ideal for growing campus infrastructure',
-        pricing: '$850/month',
-        features: ['4-6 Locations', 'MPLS Protocol', 'Advanced Management'],
+        id: "campus-connect-medium",
+        name: "Medium Campus Template",
+        description: "Ideal for growing campus infrastructure",
+        pricing: "$850/month",
+        features: ["4-6 Locations", "MPLS Protocol", "Advanced Management"],
         configuration: {
-          locations: '5',
-          protocol: 'MPLS'
-        }
+          locations: "5",
+          protocol: "MPLS",
+        },
       },
       {
-        id: 'campus-connect-large',
-        name: 'Large Campus Template',
-        description: 'Enterprise campus with SD-WAN capabilities',
-        pricing: '$1,650/month',
-        features: ['7-10 Locations', 'SD-WAN Protocol', 'Enterprise Management'],
+        id: "campus-connect-large",
+        name: "Large Campus Template",
+        description: "Enterprise campus with SD-WAN capabilities",
+        pricing: "$1,650/month",
+        features: [
+          "7-10 Locations",
+          "SD-WAN Protocol",
+          "Enterprise Management",
+        ],
         configuration: {
-          locations: '10',
-          protocol: 'SD-WAN'
-        }
-      }
+          locations: "10",
+          protocol: "SD-WAN",
+        },
+      },
     ],
     fields: [
-      { 
-        name: 'locations', 
-        label: 'Number of Locations', 
-        type: 'number', 
-        min: 2, 
+      {
+        name: "locations",
+        label: "Number of Locations",
+        type: "number",
+        min: 2,
         max: 10,
-        required: true
+        required: true,
       },
-      { 
-        name: 'protocol', 
-        label: 'Protocol', 
-        type: 'select', 
-        options: ['Ethernet', 'MPLS', 'SD-WAN'],
-        required: true
-      }
-    ]
-  }
+      {
+        name: "protocol",
+        label: "Protocol",
+        type: "select",
+        options: ["Ethernet", "MPLS", "SD-WAN"],
+        required: true,
+      },
+    ],
+  },
 };

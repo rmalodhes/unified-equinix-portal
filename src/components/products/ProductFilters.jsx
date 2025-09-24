@@ -11,8 +11,7 @@ const ProductFilters = ({
   offeringFilter,
   setOfferingFilter,
 }) => {
-  const { selectedIBX, selectedCage, setSelectedIBX, setSelectedCage } =
-    useStore();
+  const { selectedIBX, setSelectedIBX } = useStore();
   return (
     <div className="mb-8 space-y-8">
       {/* Premium Hero Section */}
@@ -38,16 +37,16 @@ const ProductFilters = ({
         </div>
       </div>
 
-      {/* IBX and Cage Selection - Compact */}
-      <div className="flex gap-6 items-center justify-center">
+      {/* IBX and Category Selection - Aligned */}
+      <div className="flex gap-6 items-end justify-center">
         <div className="w-52">
-          <label className="block text-md font-medium text-gray-600 mb-1 ">
-            IBX Location
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            A-side IBX
           </label>
           <select
             value={selectedIBX}
             onChange={(e) => setSelectedIBX(e.target.value)}
-            className="w-full px-3 py-2 text-md border border-gray-200 rounded-lg focus:ring-1 focus:ring-equinix-blue/30 focus:border-equinix-blue/50 transition-all duration-300 text-gray-800 font-medium hover:bg-gray-50 focus:bg-white cursor-pointer select-secondary"
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-1 focus:ring-equinix-blue/30 focus:border-equinix-blue/50 transition-all duration-300 text-gray-800 font-medium hover:bg-gray-50 focus:bg-white cursor-pointer select-secondary"
           >
             {IBX_OPTIONS.map((ibx) => (
               <option key={ibx} value={ibx}>
@@ -57,26 +56,28 @@ const ProductFilters = ({
           </select>
         </div>
 
-        <div className="w-60">
-          <label className="block text-md font-medium text-gray-600 mb-1">
-            Cage Selection
+        <div className="w-52">
+          <label className="block text-sm font-medium text-gray-600 mb-2">
+            Category
           </label>
           <select
-            value={selectedCage}
-            onChange={(e) => setSelectedCage(e.target.value)}
-            className="w-full px-3 py-2 text-md border border-gray-200 rounded-lg focus:ring-1 focus:ring-equinix-blue/30 focus:border-equinix-blue/50 transition-all duration-300 text-gray-800 font-medium hover:bg-gray-50 focus:bg-white cursor-pointer select-secondary"
+            value={selectedFilter}
+            onChange={(e) => setSelectedFilter(e.target.value)}
+            className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-1 focus:ring-equinix-blue/30 focus:border-equinix-blue/50 transition-all duration-300 text-gray-800 font-medium hover:bg-gray-50 focus:bg-white focus:shadow-sm select-secondary"
           >
-            {CAGE_OPTIONS.map((cage) => (
-              <option key={cage} value={cage}>
-                {cage}
-              </option>
-            ))}
+            <option value={CATEGORIES.ALL}>All Types</option>
+            <option value="secure-cabinet">Secure Cabinet Express</option>
+            <option value="patch-panel">Patch Panel</option>
+            <option value={CATEGORIES.COLOCATION}>All Colocation</option>
+            <option value={CATEGORIES.INTERCONNECTION}>
+              All Interconnection
+            </option>
           </select>
         </div>
       </div>
       {/* Premium Filter Buttons and Search Section */}
       <div className="filter-container rounded-2xl p-8 transition-all duration-500 hover:shadow-xl">
-        <div className="flex gap-6 items-center justify-between">
+        <div className="flex gap-6 items-center justify-start">
           {/* Filter Buttons */}
           <div className="flex gap-4 items-center">
             <button
@@ -85,7 +86,7 @@ const ProductFilters = ({
                 offeringFilter === "all" ? "btn-primary" : "btn-secondary"
               }
             >
-              All Offerings
+              Templates
             </button>
             <button
               onClick={() => setOfferingFilter("package")}
@@ -93,20 +94,23 @@ const ProductFilters = ({
                 offeringFilter === "package" ? "btn-primary" : "btn-secondary"
               }
             >
-              Package Offerings
+              Bundles
             </button>
           </div>
 
+          {/* Vertical Divider */}
+          <div className="h-8 w-px bg-gray-300"></div>
+
           {/* Search Bar */}
-          <div className="flex-1 max-w-md mx-4">
+          <div className="flex-1 max-w-md">
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 focus-within:text-equinix-blue transition-all duration-300" />
               <input
                 type="text"
                 placeholder={
                   offeringFilter === "package"
-                    ? "Search packages..."
-                    : "Search offerings..."
+                    ? "Search bundles..."
+                    : "Search for products..."
                 }
                 className="w-full pl-12 pr-4 py-3 bg-gray-50/50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-equinix-blue/30 focus:border-equinix-blue/50 focus:bg-white transition-all duration-500 text-gray-800 placeholder-gray-400 hover:bg-gray-50 focus:shadow-sm"
                 value={searchTerm}
@@ -114,23 +118,6 @@ const ProductFilters = ({
               />
             </div>
           </div>
-
-          {/* Category Filter - Hidden for Package Offerings */}
-          {offeringFilter !== "package" && (
-            <div className="min-w-[200px]">
-              <select
-                value={selectedFilter}
-                onChange={(e) => setSelectedFilter(e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50/50 border border-gray-200 rounded-lg focus:ring-1 focus:ring-equinix-blue/30 focus:border-equinix-blue/50 transition-all duration-500 text-gray-800 font-medium hover:bg-gray-50 focus:bg-white focus:shadow-sm"
-              >
-                <option value={CATEGORIES.ALL}>All Categories</option>
-                <option value={CATEGORIES.COLOCATION}>Colocation</option>
-                <option value={CATEGORIES.INTERCONNECTION}>
-                  Interconnection
-                </option>
-              </select>
-            </div>
-          )}
         </div>
       </div>
     </div>

@@ -73,7 +73,7 @@ const ProductCard = ({ productKey, product }) => {
               )}
             </div>
 
-            <div className="grid grid-cols-1 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               {displayTemplates.map((template) => (
                 <TemplateCard
                   key={template.id}

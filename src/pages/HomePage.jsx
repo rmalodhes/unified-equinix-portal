@@ -11,7 +11,7 @@ const HomePage = () => {
   const { selectedIBX, selectedCage, setSelectedIBX, setSelectedCage } =
     useStore();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFilter, setSelectedFilter] = useState(CATEGORIES.ALL);
+  const [selectedFilter, setSelectedFilter] = useState(CATEGORIES.COLOCATION);
   const [offeringFilter, setOfferingFilter] = useState("all");
 
   const filteredProducts = Object.keys(productData).filter((key) => {

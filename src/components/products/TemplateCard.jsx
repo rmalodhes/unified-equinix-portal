@@ -5,32 +5,6 @@ import { useStore } from "../../hooks/useStore";
 const TemplateCard = ({ template, productKey, compact = false }) => {
   const { navigate } = useStore();
 
-  const getTierColor = (tier) => {
-    switch (tier) {
-      case "basic":
-        return "from-green-500 to-emerald-600";
-      case "business":
-        return "from-blue-500 to-indigo-600";
-      case "enterprise":
-        return "from-purple-500 to-violet-600";
-      default:
-        return "from-gray-500 to-slate-600";
-    }
-  };
-
-  const getTierBadgeColor = (tier) => {
-    switch (tier) {
-      case "basic":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "business":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "enterprise":
-        return "bg-purple-100 text-purple-800 border-purple-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
   const handleTemplateSelect = () => {
     const params = new URLSearchParams({
       product: productKey,
@@ -61,14 +35,23 @@ const TemplateCard = ({ template, productKey, compact = false }) => {
           {template.description}
         </p>
 
-        <div className="flex items-center justify-between">
-          <span
-            className={`text-xs px-2 py-1 rounded-full border ${getTierBadgeColor(
-              template.tier
-            )}`}
-          >
-            {template.tier.charAt(0).toUpperCase() + template.tier.slice(1)}
-          </span>
+        {/* Essential Details in Compact View */}
+        {template.essentialDetails && (
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            {template.essentialDetails.map((detail, index) => (
+              <div key={index} className="bg-gray-50 rounded p-2">
+                <p className="text-xs text-gray-500 font-medium">
+                  {detail.label}
+                </p>
+                <p className="text-xs font-semibold text-gray-900 mt-0.5 line-clamp-1">
+                  {detail.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-center justify-end">
           <span className="font-bold text-sm text-equinix-blue">
             {template.pricing}
           </span>
@@ -84,11 +67,7 @@ const TemplateCard = ({ template, productKey, compact = false }) => {
     >
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div
-            className={`w-12 h-12 rounded-lg bg-gradient-to-br ${getTierColor(
-              template.tier
-            )} flex items-center justify-center`}
-          >
+          <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
             <span className="text-white font-bold text-lg">
               {template.name.charAt(0)}
             </span>
@@ -97,13 +76,6 @@ const TemplateCard = ({ template, productKey, compact = false }) => {
             <h3 className="font-semibold text-lg text-gray-900 group-hover:text-indigo-600 transition-colors">
               {template.name}
             </h3>
-            <span
-              className={`text-sm px-2 py-1 rounded-full border ${getTierBadgeColor(
-                template.tier
-              )}`}
-            >
-              {template.tier.charAt(0).toUpperCase() + template.tier.slice(1)}
-            </span>
           </div>
         </div>
 
