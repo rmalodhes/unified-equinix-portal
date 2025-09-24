@@ -10,8 +10,31 @@ const ProductFilters = ({
   setSelectedFilter,
   offeringFilter,
   setOfferingFilter,
+  subCategoryFilter,
+  setSubCategoryFilter,
 }) => {
   const { selectedIBX, setSelectedIBX } = useStore();
+
+  // Define subcategory options based on main category
+  const getSubCategoryOptions = () => {
+    if (selectedFilter === CATEGORIES.COLOCATION) {
+      return [
+        { value: "all", label: "Types" },
+        { value: "secure-cabinet", label: "Secure Cabinet Express" },
+        { value: "patch-panel", label: "Patch Panel" },
+      ];
+    } else if (selectedFilter === CATEGORIES.INTERCONNECTION) {
+      return [
+        { value: "all", label: "Types" },
+        { value: "fiber-connect", label: "Fiber Connect" },
+        { value: "metro-connect", label: "Metro Connect" },
+        { value: "campus-connect", label: "Campus Connect" },
+      ];
+    }
+    return [];
+  };
+
+  const subCategoryOptions = getSubCategoryOptions();
   return (
     <div className="mb-8 space-y-8">
       {/* Premium Hero Section */}
@@ -66,12 +89,8 @@ const ProductFilters = ({
             className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-1 focus:ring-equinix-blue/30 focus:border-equinix-blue/50 transition-all duration-300 text-gray-800 font-medium hover:bg-gray-50 focus:bg-white focus:shadow-sm select-secondary"
           >
             <option value={CATEGORIES.ALL}>All Types</option>
-            <option value="secure-cabinet">Secure Cabinet Express</option>
-            <option value="patch-panel">Patch Panel</option>
-            <option value={CATEGORIES.COLOCATION}>All Colocation</option>
-            <option value={CATEGORIES.INTERCONNECTION}>
-              All Interconnection
-            </option>
+            <option value={CATEGORIES.COLOCATION}>Colocation</option>
+            <option value={CATEGORIES.INTERCONNECTION}>Interconnection</option>
           </select>
         </div>
       </div>
@@ -118,6 +137,23 @@ const ProductFilters = ({
               />
             </div>
           </div>
+
+          {/* Subcategory Filter */}
+          {subCategoryOptions.length > 0 && (
+            <div className="w-48">
+              <select
+                value={subCategoryFilter}
+                onChange={(e) => setSubCategoryFilter(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-1 focus:ring-equinix-blue/30 focus:border-equinix-blue/50 transition-all duration-300 text-gray-800 font-medium hover:bg-gray-50 focus:bg-white focus:shadow-sm select-secondary"
+              >
+                {subCategoryOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </div>
     </div>

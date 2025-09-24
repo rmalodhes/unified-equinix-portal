@@ -22,13 +22,14 @@ export const productData = {
         popular: false,
         description:
           "Perfect for small deployments and development environments",
-        pricing: "$850",
+        mrcPricing: "$850",
+        nrcPricing: "$150",
         useCase: "Small teams, development environments, basic infrastructure",
         essentialDetails: [
           { label: "Cabinet Dimensions", value: "600mm × 800mm × 2000mm" },
           { label: "Circuit Type", value: "Single Phase Circuit" },
           { label: "PDU", value: "PDU:P24E20G" },
-          { label: "Setup Time", value: "2 hours" },
+          { label: "Draw Cap", value: "2kVA" },
         ],
         keyFeatures: [
           "Compact 600mm width cabinet",
@@ -42,6 +43,8 @@ export const productData = {
           cabinetDimensions: "600mm × 800mm × 2000mm",
           circuitType: "Single Phase Circuit",
           pdu: "PDU:P24E20G",
+          drawCap: "2kVA",
+          pduCount: 1,
         },
       },
       {
@@ -49,14 +52,15 @@ export const productData = {
         name: "Standard Cabinet",
         popular: true,
         description: "Ideal for growing business infrastructure needs",
-        pricing: "$1,200",
+        mrcPricing: "$1,200",
+        nrcPricing: "$200",
         useCase:
           "Medium businesses, production environments, standard deployments",
         essentialDetails: [
           { label: "Cabinet Dimensions", value: "600mm × 1200mm × 2200mm" },
           { label: "Circuit Type", value: "Single Phase Circuit" },
           { label: "PDU", value: "PDU:P36E35G" },
-          { label: "Setup Time", value: "1 hour" },
+          { label: "Draw Cap", value: "3kVA" },
         ],
         keyFeatures: [
           "Standard 600mm × 1200mm cabinet",
@@ -71,6 +75,8 @@ export const productData = {
           cabinetDimensions: "600mm × 1200mm × 2200mm",
           circuitType: "Single Phase Circuit",
           pdu: "PDU:P36E35G",
+          drawCap: "3kVA",
+          pduCount: 1,
         },
       },
       {
@@ -78,14 +84,15 @@ export const productData = {
         name: "Enterprise Cabinet",
         popular: false,
         description: "High-density solution for enterprise-scale deployments",
-        pricing: "$1,800",
+        mrcPricing: "$1,800",
+        nrcPricing: "$800",
         useCase:
           "Large enterprises, mission-critical applications, high-density deployments",
         essentialDetails: [
           { label: "Cabinet Dimensions", value: "800mm × 1200mm × 2200mm" },
           { label: "Circuit Type", value: "Three Phase Circuit" },
           { label: "PDU", value: "PDU:P48E50G" },
-          { label: "Setup Time", value: "30 minutes" },
+          { label: "Draw Cap", value: "5kVA" },
         ],
         keyFeatures: [
           "Large 800mm × 1200mm cabinet",
@@ -102,6 +109,8 @@ export const productData = {
           cabinetDimensions: "800mm × 1200mm × 2200mm",
           circuitType: "Three Phase Circuit",
           pdu: "PDU:P48E50G",
+          drawCap: "5kVA",
+          pduCount: 1,
         },
       },
     ],
@@ -110,7 +119,8 @@ export const productData = {
         id: "secure-cabinet-compact",
         name: "Compact Cabinet Template",
         description: "Small footprint cabinet for basic needs",
-        pricing: "$850/month",
+        mrcPricing: "$850",
+        nrcPricing: "$150",
         features: ["600mm Width", "Single Phase", "Basic PDU"],
         configuration: {
           cabinetDimensions: "600mm × 800mm × 2000mm",
@@ -122,7 +132,8 @@ export const productData = {
         id: "secure-cabinet-standard",
         name: "Standard Cabinet Template",
         description: "Standard cabinet for typical deployments",
-        pricing: "$1,200/month",
+        mrcPricing: "$1,200",
+        nrcPricing: "$200",
         features: ["600mm × 1200mm", "Single Phase", "Enhanced PDU"],
         configuration: {
           cabinetDimensions: "600mm × 1200mm × 2200mm",
@@ -134,7 +145,8 @@ export const productData = {
         id: "secure-cabinet-enterprise",
         name: "Enterprise Cabinet Template",
         description: "Large cabinet for high-density deployments",
-        pricing: "$1,800/month",
+        mrcPricing: "$1,800",
+        nrcPricing: "$800",
         features: ["800mm × 1200mm", "Three Phase", "Enterprise PDU"],
         configuration: {
           cabinetDimensions: "800mm × 1200mm × 2200mm",
@@ -184,7 +196,8 @@ export const productData = {
         popular: false,
         description:
           "Perfect for small office environments with basic connectivity needs",
-        pricing: "$120",
+        mrcPricing: "$120",
+        nrcPricing: "$50",
         useCase: "Small offices, home offices, basic network infrastructure",
         essentialDetails: [
           { label: "Ports", value: "12 ports" },
@@ -211,7 +224,8 @@ export const productData = {
         name: "Business Standard",
         popular: true,
         description: "Ideal for growing business network infrastructure needs",
-        pricing: "$220",
+        mrcPricing: "$220",
+        nrcPricing: "$75",
         useCase:
           "Medium businesses, branch offices, structured cabling systems",
         essentialDetails: [
@@ -241,7 +255,8 @@ export const productData = {
         popular: false,
         description:
           "High-density solution for large-scale network deployments",
-        pricing: "$420",
+        mrcPricing: "$420",
+        nrcPricing: "$120",
         useCase: "Data centers, large enterprises, high-density applications",
         essentialDetails: [
           { label: "Ports", value: "48 ports" },
@@ -271,7 +286,8 @@ export const productData = {
         id: "patch-panel-small",
         name: "Small Office Template",
         description: "Perfect for small office connectivity needs",
-        pricing: "$120/month",
+        mrcPricing: "$120",
+        nrcPricing: "$50",
         features: ["12 Ports", "RJ45 Connectors", "Cat6 Ready"],
         configuration: {
           ports: "12",
@@ -282,7 +298,8 @@ export const productData = {
         id: "patch-panel-medium",
         name: "Medium Business Template",
         description: "Ideal for growing business infrastructure",
-        pricing: "$180/month",
+        mrcPricing: "$180",
+        nrcPricing: "$75",
         features: ["24 Ports", "LC Connectors", "Fiber Ready"],
         configuration: {
           ports: "24",
@@ -293,7 +310,8 @@ export const productData = {
         id: "patch-panel-enterprise",
         name: "Enterprise Template",
         description: "High-density solution for large deployments",
-        pricing: "$300/month",
+        mrcPricing: "$300",
+        nrcPricing: "$120",
         features: ["48 Ports", "SC Connectors", "High Density"],
         configuration: {
           ports: "48",
@@ -344,7 +362,8 @@ export const productData = {
         name: "Local Connect",
         popular: false,
         description: "Standard 1 Gigabit fiber for local connectivity needs",
-        pricing: "$500",
+        mrcPricing: "$500",
+        nrcPricing: "$200",
         useCase:
           "Local connections, small business internet, basic fiber needs",
         essentialDetails: [
@@ -374,7 +393,8 @@ export const productData = {
         popular: true,
         description:
           "High-performance 10 Gigabit connection for business applications",
-        pricing: "$1,400",
+        mrcPricing: "$1,400",
+        nrcPricing: "$400",
         useCase:
           "Regional connectivity, business applications, video streaming",
         essentialDetails: [
@@ -404,7 +424,8 @@ export const productData = {
         name: "Nationwide Connect",
         popular: false,
         description: "Ultra-high-speed 100 Gigabit for enterprise applications",
-        pricing: "$4,200",
+        mrcPricing: "$4,200",
+        nrcPricing: "$1,500",
         useCase:
           "Enterprise backbone, data center interconnect, mission-critical apps",
         essentialDetails: [

@@ -51,10 +51,27 @@ const TemplateCard = ({ template, productKey, compact = false }) => {
           </div>
         )}
 
-        <div className="flex items-center justify-end">
-          <span className="font-bold text-sm text-equinix-blue">
-            {template.pricing}
-          </span>
+        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+          {template.mrcPricing && template.nrcPricing ? (
+            <>
+              <div className="text-center">
+                <p className="text-xs text-gray-500 font-medium">One-time</p>
+                <p className="font-bold text-sm text-blue-600">
+                  {template.nrcPricing}
+                </p>
+              </div>
+              <div className="text-center">
+                <p className="text-xs text-gray-500 font-medium">Monthly</p>
+                <p className="font-bold text-sm text-green-600">
+                  {template.mrcPricing}
+                </p>
+              </div>
+            </>
+          ) : (
+            <span className="font-bold text-sm text-equinix-blue">
+              {template.pricing || template.mrcPricing}
+            </span>
+          )}
         </div>
       </div>
     );
@@ -81,14 +98,31 @@ const TemplateCard = ({ template, productKey, compact = false }) => {
 
         <div className="text-right">
           {template.popular && (
-            <div className="flex items-center gap-1 text-sm text-amber-600 mb-1">
+            <div className="flex items-center gap-1 text-sm text-amber-600 mb-2">
               <Star className="w-4 h-4 fill-current" />
               <span>Most Popular</span>
             </div>
           )}
-          <span className="font-bold text-xl text-equinix-blue">
-            {template.pricing}
-          </span>
+          {template.mrcPricing && template.nrcPricing ? (
+            <div className="space-y-1">
+              <div>
+                <p className="text-xs text-gray-500 font-medium">Monthly</p>
+                <p className="font-bold text-lg text-green-600">
+                  {template.mrcPricing}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-500 font-medium">Setup</p>
+                <p className="font-bold text-lg text-blue-600">
+                  {template.nrcPricing}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <span className="font-bold text-xl text-equinix-blue">
+              {template.pricing || template.mrcPricing}
+            </span>
+          )}
         </div>
       </div>
 

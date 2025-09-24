@@ -14,18 +14,50 @@ const QuoteDetails = () => {
   const { quotes, navigate, createOrder } = useStore();
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [currentQuote, setCurrentQuote] = useState(null);
+  const [selectedItemIndex, setSelectedItemIndex] = useState(0);
 
   useEffect(() => {
     // Get quote ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     const quoteId = urlParams.get("id");
 
-    if (quoteId && quotes.length > 0) {
-      const quote = quotes.find((q) => q.id === quoteId);
-      if (quote) {
-        setCurrentQuote(quote);
-        // Select all items by default
-        setSelectedItems(new Set(quote.items.map((_, index) => index)));
+    if (quoteId) {
+      // Try to find existing quote or create mock quote
+      const existingQuote = quotes.find((q) => q.id === quoteId);
+      
+      if (existingQuote) {
+        setCurrentQuote(existingQuote);
+        setSelectedItems(new Set(existingQuote.items.map((_, index) => index)));
+      } else {
+        // Create mock quote for demo purposes
+        const mockQuote = {
+          id: quoteId,
+          items: [
+            {
+              id: Date.now(),
+              name: "Secure Cabinet Express",
+              category: "Colocation",
+              key: "secure-cabinet",
+              price: 1260,
+              configuration: {
+                cabinetDimensions: "600mm × 1200mm × 2200mm",
+                circuitType: "Two Phase Circuit",
+                drawCap: "3kVA",
+                pduCount: 2,
+                pdu: "PDU:P36E30G",
+                ibx: "NY1",
+                cage: "C-123",
+                configuredAt: new Date().toISOString(),
+              },
+            },
+          ],
+          total: 1260,
+          createdAt: new Date().toISOString(),
+          status: "draft",
+        };
+        
+        setCurrentQuote(mockQuote);
+        setSelectedItems(new Set(mockQuote.items.map((_, index) => index)));
       }
     }
   }, [quotes]);
@@ -36,10 +68,9 @@ const QuoteDetails = () => {
     const selectedItemsArray = currentQuote.items.filter((_, index) =>
       selectedItems.has(index)
     );
-    const orderId = `O-${Math.random()
-      .toString(36)
-      .substr(2, 9)
-      .toUpperCase()}`;
+    const orderId = `1-${Math.random()
+      .toString()
+      .substr(2, 9)}`;
 
     const order = {
       id: orderId,

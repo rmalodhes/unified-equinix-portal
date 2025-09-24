@@ -42,16 +42,9 @@ const ProductCard = ({ productKey, product }) => {
           </button>
         </div>
 
-        <p className="text-gray-600 text-sm mb-4 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
+        {/* <p className="text-gray-600 text-sm mb-4 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
           {product.description}
-        </p>
-
-        <div className="flex items-center justify-between text-sm border-t border-gray-100 pt-4 group-hover:border-purple-200 transition-colors duration-300">
-          <span className="text-gray-500">Starting from</span>
-          <span className="font-bold text-xl bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-            ${product.basePrice}/month
-          </span>
-        </div>
+        </p> */}
 
         {/* Templates Section */}
         {templates.length > 0 && (
@@ -86,7 +79,6 @@ const ProductCard = ({ productKey, product }) => {
           </div>
         )}
       </div>
-
       {/* Template Modal */}
       <TemplateModal
         isOpen={showTemplateModal}
