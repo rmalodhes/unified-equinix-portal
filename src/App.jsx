@@ -9,6 +9,10 @@ import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
 import OrderDetails from "./pages/OrderDetails";
 import QuoteDetails from "./pages/QuoteDetails";
+import QuoteOverview from "./pages/QuoteOverview";
+import ItemConfiguration from "./pages/ItemConfiguration";
+import ViewOrder from "./pages/ViewOrder";
+import Configuration from "./pages/Configuration";
 
 function App() {
   return (
@@ -23,6 +27,16 @@ function App() {
         <Route path="/orders" element={<Orders />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/quoteDetails" element={<QuoteDetails />} />
+        <Route path="/quote-overview/:id" element={<QuoteOverview />} />
+        <Route
+          path="/configure-item/:quoteId/:itemIndex"
+          element={<ItemConfiguration />}
+        />
+        <Route
+          path="/configuration/:quoteId/:itemIndex"
+          element={<Configuration />}
+        />
+        <Route path="/viewOrder" element={<ViewOrder />} />
       </Routes>
     </div>
   );

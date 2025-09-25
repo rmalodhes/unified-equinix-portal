@@ -1,7 +1,26 @@
-import React, { createContext, useReducer } from "react";
+import React, { createContext, useReducer, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const StoreContext = createContext();
+
+// Helper functions for localStorage
+const loadFromStorage = () => {
+  try {
+    const savedState = localStorage.getItem("equinixPortalStore");
+    return savedState ? JSON.parse(savedState) : null;
+  } catch (error) {
+    console.error("Error loading from localStorage:", error);
+    return null;
+  }
+};
+
+const saveToStorage = (state) => {
+  try {
+    localStorage.setItem("equinixPortalStore", JSON.stringify(state));
+  } catch (error) {
+    console.error("Error saving to localStorage:", error);
+  }
+};
 
 const initialState = {
   cart: [],
@@ -10,6 +29,30 @@ const initialState = {
   orders: [],
   selectedIBX: "SV1",
   selectedCage: "A-101",
+};
+
+// Load initial state from localStorage or use default
+const getInitialState = () => {
+  const savedState = loadFromStorage();
+  if (!savedState) return initialState;
+
+  // Sanitize loaded data to ensure quotes and orders have proper items arrays and status
+  const sanitizedState = {
+    ...initialState,
+    ...savedState,
+    quotes: (savedState.quotes || []).map((quote) => ({
+      ...quote,
+      items: Array.isArray(quote.items) ? quote.items : [],
+      status: quote.status || "pending",
+    })),
+    orders: (savedState.orders || []).map((order) => ({
+      ...order,
+      items: Array.isArray(order.items) ? order.items : [],
+      status: order.status || "pending",
+    })),
+  };
+
+  return sanitizedState;
 };
 
 const storeReducer = (state, action) => {
@@ -34,15 +77,69 @@ const storeReducer = (state, action) => {
         ...state,
         packages: state.packages.filter((item) => item.id !== action.payload),
       };
-    case "CREATE_QUOTE":
+    case "CREATE_QUOTE": {
+      const generateQuoteId = () => {
+        const prefix = "1-";
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let randomSuffix = "";
+        for (let i = 0; i < 8; i++) {
+          randomSuffix += chars.charAt(
+            Math.floor(Math.random() * chars.length)
+          );
+        }
+        return `${prefix}${randomSuffix}`;
+      };
+
+      const quoteId = action.payload.id || generateQuoteId();
       return {
         ...state,
-        quotes: [...state.quotes, { ...action.payload, id: `Q-${Date.now()}` }],
+        quotes: [
+          ...state.quotes,
+          {
+            ...action.payload,
+            id: quoteId,
+            quoteNumber: action.payload.quoteNumber || quoteId,
+          },
+        ],
+      };
+    }
+    case "ADD_QUOTE":
+      return {
+        ...state,
+        quotes: [...state.quotes, action.payload],
+      };
+    case "UPDATE_QUOTE":
+      return {
+        ...state,
+        quotes: state.quotes.map((quote) =>
+          quote.id === action.payload.quoteId
+            ? { ...quote, ...action.payload.updatedQuote }
+            : quote
+        ),
       };
     case "CREATE_ORDER":
       return {
         ...state,
         orders: [...state.orders, { ...action.payload, id: `1-${Date.now()}` }],
+      };
+    case "UPDATE_QUOTE_STATUS":
+      return {
+        ...state,
+        quotes: state.quotes.map((quote) =>
+          quote.id === action.payload.quoteId
+            ? {
+                ...quote,
+                status: action.payload.status,
+                signature: action.payload.signature,
+                updatedAt: new Date().toISOString(),
+              }
+            : quote
+        ),
+      };
+    case "CLEAR_CART":
+      return {
+        ...state,
+        cart: [],
       };
     case "SET_IBX":
       return {
@@ -60,8 +157,13 @@ const storeReducer = (state, action) => {
 };
 
 export const StoreProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(storeReducer, initialState);
+  const [state, dispatch] = useReducer(storeReducer, getInitialState());
   const reactNavigate = useNavigate();
+
+  // Save to localStorage whenever state changes
+  useEffect(() => {
+    saveToStorage(state);
+  }, [state]);
 
   const navigate = (page) => {
     const routes = {
@@ -72,6 +174,7 @@ export const StoreProvider = ({ children }) => {
       orders: "/orders",
       profile: "/profile",
       orderDetails: "/orderDetails",
+      viewOrder: "/viewOrder",
     };
 
     const path = routes[page] || (page.startsWith("/") ? page : `/${page}`);
@@ -85,16 +188,34 @@ export const StoreProvider = ({ children }) => {
       dispatch({ type: "ADD_TO_PACKAGES", payload: item }),
     removeFromPackages: (id) =>
       dispatch({ type: "REMOVE_FROM_PACKAGES", payload: id }),
-    createQuote: (items) =>
+    createQuote: (itemsOrQuote) =>
       dispatch({
         type: "CREATE_QUOTE",
-        payload: { items, createdAt: new Date().toISOString() },
+        payload: Array.isArray(itemsOrQuote)
+          ? { items: itemsOrQuote, createdAt: new Date().toISOString() }
+          : { createdAt: new Date().toISOString(), ...itemsOrQuote },
+      }),
+    addQuote: (quote) =>
+      dispatch({
+        type: "ADD_QUOTE",
+        payload: quote,
+      }),
+    updateQuote: (quoteId, updatedQuote) =>
+      dispatch({
+        type: "UPDATE_QUOTE",
+        payload: { quoteId, updatedQuote },
       }),
     createOrder: (quote) =>
       dispatch({
         type: "CREATE_ORDER",
         payload: { ...quote, createdAt: new Date().toISOString() },
       }),
+    updateQuoteStatus: (quoteId, status, signature = null) =>
+      dispatch({
+        type: "UPDATE_QUOTE_STATUS",
+        payload: { quoteId, status, signature },
+      }),
+    clearCart: () => dispatch({ type: "CLEAR_CART" }),
     setSelectedIBX: (ibx) => dispatch({ type: "SET_IBX", payload: ibx }),
     setSelectedCage: (cage) => dispatch({ type: "SET_CAGE", payload: cage }),
     navigate,
