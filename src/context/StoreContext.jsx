@@ -117,11 +117,24 @@ const storeReducer = (state, action) => {
             : quote
         ),
       };
-    case "CREATE_ORDER":
+    case "CREATE_ORDER": {
+      const generateOrderId = () => {
+        const timestamp = Date.now().toString();
+        return `1-${timestamp}`;
+      };
+      const orderId = action.payload.orderNumber || generateOrderId();
       return {
         ...state,
-        orders: [...state.orders, { ...action.payload, id: `1-${Date.now()}` }],
+        orders: [
+          ...state.orders,
+          {
+            ...action.payload,
+            id: orderId,
+            orderNumber: orderId,
+          },
+        ],
       };
+    }
     case "UPDATE_QUOTE_STATUS":
       return {
         ...state,

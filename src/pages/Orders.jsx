@@ -7,6 +7,8 @@ import {
   Calendar,
   User,
   Truck,
+  MapPin,
+  Clock,
 } from "lucide-react";
 import { useStore } from "../hooks/useStore";
 import { formatCurrency } from "../utils/calculations";
@@ -85,7 +87,7 @@ const Orders = () => {
           </div>
           <button
             onClick={() => navigate("quotes")}
-            className="flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
           >
             <Plus className="w-5 h-5" />
             Create New Order
@@ -173,22 +175,22 @@ const Orders = () => {
                   <thead className="bg-gradient-to-r from-slate-50 to-slate-100 border-b border-slate-200">
                     <tr>
                       <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">
-                        Order
+                        Order Number
                       </th>
                       <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">
-                        Customer
+                        Product
+                      </th>
+                      <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">
+                        Location (IBX)
                       </th>
                       <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">
                         Status
                       </th>
                       <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">
-                        Created
+                        Est. Completion
                       </th>
                       <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">
-                        Delivery
-                      </th>
-                      <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">
-                        Total
+                        Last Updated
                       </th>
                       <th className="px-6 py-4 text-left text-sm font-bold text-slate-700">
                         Actions
@@ -197,57 +199,66 @@ const Orders = () => {
                   </thead>
                   <tbody className="divide-y divide-slate-200/50">
                     {filteredOrders.map((order) => {
-                      const orderTotal =
-                        (Array.isArray(order.items) &&
-                          order.items.reduce(
-                            (sum, item) =>
-                              sum +
-                              (item.totalPrice?.oneTime || item.price || 0),
-                            0
-                          )) ||
-                        order.total ||
-                        0;
-                      const monthlyTotal =
-                        (Array.isArray(order.items) &&
-                          order.items.reduce(
-                            (sum, item) =>
-                              sum + (item.totalPrice?.recurring || 0),
-                            0
-                          )) ||
-                        0;
+                      // Get primary product name (first item or summary)
+                      const primaryProduct =
+                        order.items?.length > 0
+                          ? order.items[0].name
+                          : order.configurationSummary ||
+                            "Infrastructure Service";
+
+                      // Get location from configuration or default
+                      const location =
+                        order.items?.[0]?.configurationData?.location ||
+                        order.items?.[0]?.configuration?.ibx ||
+                        order.location ||
+                        "SV1";
+
+                      // Calculate estimated completion date (30 days from creation for demo)
+                      const estimatedCompletion = new Date(
+                        new Date(order.createdAt).getTime() +
+                          30 * 24 * 60 * 60 * 1000
+                      );
+
+                      // Last updated date (use createdAt or a mock recent date)
+                      const lastUpdated = order.updatedAt || order.createdAt;
 
                       return (
                         <tr
                           key={order.id}
                           className="hover:bg-slate-50/50 transition-colors"
                         >
+                          {/* Order Number */}
+                          <td className="px-6 py-4">
+                            <div className="font-semibold text-slate-900">
+                              {order.orderNumber || order.id}
+                            </div>
+                          </td>
+
+                          {/* Product */}
                           <td className="px-6 py-4">
                             <div>
-                              <div className="font-semibold text-slate-900">
-                                {order.id}
+                              <div className="font-medium text-slate-900">
+                                {primaryProduct}
                               </div>
-                              <div className="text-sm text-slate-500">
-                                {order.items?.length || 0} item
-                                {(order.items?.length || 0) !== 1 ? "s" : ""}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center">
-                                <User className="w-4 h-4 text-green-600" />
-                              </div>
-                              <div>
-                                <div className="font-medium text-slate-900">
-                                  {order.customerInfo?.name || "John Smith"}
-                                </div>
+                              {order.items?.length > 1 && (
                                 <div className="text-sm text-slate-500">
-                                  {order.customerInfo?.company ||
-                                    "Tech Solutions Inc."}
+                                  +{order.items.length - 1} more item
+                                  {order.items.length - 1 !== 1 ? "s" : ""}
                                 </div>
-                              </div>
+                              )}
                             </div>
                           </td>
+
+                          {/* Location (IBX) */}
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                              <span className="font-medium">
+                                {location.toUpperCase()}
+                              </span>
+                            </div>
+                          </td>
+
+                          {/* Status */}
                           <td className="px-6 py-4">
                             <span
                               className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(
@@ -266,49 +277,36 @@ const Orders = () => {
                                 (order.status || "pending").slice(1)}
                             </span>
                           </td>
+
+                          {/* Estimated Completion Date */}
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2 text-sm text-slate-600">
                               <Calendar className="w-4 h-4" />
-                              {new Date(order.createdAt).toLocaleDateString(
+                              {estimatedCompletion.toLocaleDateString("en-GB")}
+                            </div>
+                          </td>
+
+                          {/* Last Updated */}
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                              <Clock className="w-4 h-4" />
+                              {new Date(lastUpdated).toLocaleDateString(
                                 "en-GB"
                               )}
                             </div>
                           </td>
+
+                          {/* Actions */}
                           <td className="px-6 py-4">
-                            <div className="text-sm text-slate-600">
-                              {order.deliveryDate || "TBD"}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div>
-                              <div className="font-semibold text-slate-900">
-                                {formatCurrency(orderTotal)}
-                              </div>
-                              {monthlyTotal > 0 && (
-                                <div className="text-sm text-slate-500">
-                                  {formatCurrency(monthlyTotal)}/mo
-                                </div>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() =>
-                                  navigate(`/viewOrder?id=${order.id}`)
-                                }
-                                className="flex items-center gap-1 px-3 py-2 text-slate-600 hover:text-green-600 border border-slate-200 hover:border-green-300 rounded-lg hover:bg-green-50/50 transition-colors text-sm font-medium"
-                              >
-                                <Eye className="w-4 h-4" />
-                                View
-                              </button>
-                              {order.status === "completed" && (
-                                <button className="flex items-center gap-1 px-3 py-2 text-green-600 hover:text-green-700 border border-green-200 hover:border-green-300 rounded-lg hover:bg-green-50 transition-colors text-sm font-medium">
-                                  <CheckCircle2 className="w-4 h-4" />
-                                  Active
-                                </button>
-                              )}
-                            </div>
+                            <button
+                              onClick={() =>
+                                navigate(`/viewOrder?id=${order.id}`)
+                              }
+                              className="flex items-center gap-1 px-3 py-2 text-slate-600 hover:text-green-600 border border-slate-200 hover:border-green-300 rounded-lg hover:bg-green-50/50 transition-colors text-sm font-medium"
+                            >
+                              <Eye className="w-4 h-4" />
+                              View Order
+                            </button>
                           </td>
                         </tr>
                       );

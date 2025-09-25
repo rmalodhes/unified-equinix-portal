@@ -41,10 +41,12 @@ export default function Configuration() {
   const handleSaveConfiguration = async () => {
     setSaving(true);
     try {
-      // Generate mock order number
-      const orderNumber = `${
-        lineItem.key || lineItem.name.replace(/\s+/g, "-").toUpperCase()
-      }-${Date.now()}`;
+      // Generate order number in consistent format 1-XXXXXXXXXX
+      const generateOrderNumber = () => {
+        const timestamp = Date.now().toString();
+        return `1-${timestamp}`;
+      };
+      const orderNumber = generateOrderNumber();
       const configSummary = `${lineItem.name} configured for ${
         quote.customerInfo?.company || "Customer"
       }`;

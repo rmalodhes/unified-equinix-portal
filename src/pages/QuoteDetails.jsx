@@ -7,6 +7,7 @@ import {
   Settings,
   ChevronDown,
   ChevronUp,
+  MessageCircle,
 } from "lucide-react";
 import { useStore } from "../hooks/useStore";
 import { formatCurrency } from "../utils/calculations";
@@ -747,8 +748,13 @@ const QuoteDetails = () => {
         })()}
 
       {/* Quote Items */}
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-slate-800">Quote Items</h2>
+      <div className="space-y-6 px-8 py-6 rounded-xl bg-white border border-slate-200 shadow-sm ">
+        <div className="flex items-center space-x-3 mb-4 justify-start">
+          <h2 className="text-2xl font-bold text-slate-800">Quote Items</h2>
+          <p className="bg-blue-500 text-white rounded-full w-7 h-6 flex items-center justify-center text-xs">
+            {currentQuote.items.length}
+          </p>
+        </div>
 
         {currentQuote.items.map((item, index) => {
           const itemDiscounts = getItemDiscounts(item);
@@ -1104,10 +1110,23 @@ const QuoteDetails = () => {
             </p>
           )}
           {currentQuote.status === "declined" && (
-            <p className="text-red-700">
-              This quote has been declined. You can create a new quote by adding
-              items to your cart.
-            </p>
+            <div className="flex flex-col items-center justify-center">
+              <p className="text-red-700">
+                This quote has been declined. You can create a new quote by
+                adding items to your cart.
+              </p>
+              <button
+                onClick={() => {
+                  // In a real app, this could open a chat widget or navigate to contact form
+                  alert("Connecting you to our sales team...");
+                }}
+                className="ml-4 flex items-center gap-2 px-4 py-2 btn-secondary rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 mt-4"
+                title="Contact Sales Representative"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Contact Sales</span>
+              </button>
+            </div>
           )}
           {currentQuote.status === "expired" && (
             <p className="text-slate-600">
@@ -1128,18 +1147,6 @@ const QuoteDetails = () => {
 
               return (
                 <div className="mt-6">
-                  <button
-                    onClick={handleCreateOrder}
-                    disabled={!allConfigured && configurableItems.length > 0}
-                    className={`px-6 py-3 rounded-xl font-bold transition-all duration-200 flex items-center gap-2 shadow-lg mx-auto ${
-                      allConfigured || configurableItems.length === 0
-                        ? "bg-blue-600 text-white hover:bg-blue-700 transform hover:scale-105"
-                        : "bg-slate-300 text-slate-500 cursor-not-allowed"
-                    }`}
-                  >
-                    <ShoppingCart className="w-5 h-5" />
-                    Create Order
-                  </button>
                   {!allConfigured && configurableItems.length > 0 && (
                     <p className="text-sm text-slate-600 mt-2">
                       Complete all configurations to create order
@@ -1151,202 +1158,638 @@ const QuoteDetails = () => {
         </div>
       )}
 
-      {/* Document Viewer Modal */}
+      {/* Document Viewer Full Screen */}
       {showDocument && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="flex items-center justify-between p-6 border-b border-slate-200">
-              <h2 className="text-xl font-bold text-slate-800">
-                Quote Document
-              </h2>
-              <button
-                onClick={() => setShowDocument(false)}
-                className="text-slate-500 hover:text-slate-700 text-2xl font-bold"
-              >
-                ×
-              </button>
+        <div className="fixed inset-0 z-50 min-h-screen bg-white">
+          {/* Header - Hide on print */}
+          <div className="print:hidden bg-white border-b sticky top-0 z-10">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => setShowDocument(false)}
+                  className="flex items-center text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  ← Back to Quote Overview
+                </button>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => window.print()}
+                    className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    Download
+                  </button>
+                  {canDecline && (
+                    <button
+                      onClick={handleDeclineQuote}
+                      disabled={isDeclining}
+                      className="px-4 py-2 border border-red-500 text-red-600 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
+                    >
+                      {isDeclining ? "Declining..." : "Decline"}
+                    </button>
+                  )}
+                  {canAccept && (
+                    <button
+                      onClick={handleAcceptQuote}
+                      disabled={isAccepting}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                    >
+                      {isAccepting ? "Accepting..." : "Accept Quote"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Quote Document */}
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:px-0 print:py-0">
+            {/* Quote Header */}
+            <div className="border-b-2 border-red-600 pb-6 mb-8">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h1 className="text-red-600 text-2xl font-bold tracking-tight mb-2">
+                    EQUINIX QUOTE
+                  </h1>
+                  <div className="space-y-1 text-sm">
+                    <p>
+                      <strong>Quote Number:</strong> {currentQuote.quoteNumber}
+                    </p>
+                    <p>
+                      <strong>Version:</strong> 1
+                    </p>
+                    <p>
+                      <strong>Currency:</strong> {currentQuote.currency}
+                    </p>
+                    <p>
+                      <strong>Quote Valid Until:</strong>{" "}
+                      {currentQuote.validUntil}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="w-24 h-24 bg-red-600 text-white flex items-center justify-center text-xs font-bold">
+                    EQUINIX LOGO
+                  </div>
+                  <div className="mt-2 text-xs">
+                    <p>
+                      <strong>PREPARED BY:</strong>
+                    </p>
+                    <p>Sales Representative</p>
+                    <p>sales@equinix.com</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-              {/* Document Header */}
-              <div className="text-center mb-8">
-                <div className="text-3xl font-bold text-red-600 mb-2">
-                  EQUINIX
-                </div>
-                <div className="text-xl font-semibold text-slate-800">
-                  OFFICIAL QUOTE
-                </div>
-                <div className="text-sm text-slate-600 mt-2">
-                  Quote Number: {currentQuote.quoteNumber}
-                </div>
+            {/* Customer Information */}
+            <div className="grid grid-cols-2 gap-8 mb-8 text-sm">
+              <div>
+                <h3 className="font-bold mb-2">PREPARED FOR:</h3>
+                <p>{currentQuote.customerInfo?.name || "John Smith"}</p>
+                <p>
+                  {currentQuote.customerInfo?.email || "john.smith@company.com"}
+                </p>
+                <p>
+                  {currentQuote.customerInfo?.company || "Tech Solutions Inc."}
+                </p>
               </div>
-
-              {/* Quote Details */}
-              <div className="grid grid-cols-2 gap-6 mb-8">
-                <div>
-                  <h3 className="font-semibold text-slate-800 mb-3">
-                    Bill To:
-                  </h3>
-                  <div className="text-sm space-y-1">
-                    <div>{currentQuote.customerInfo?.name || "John Smith"}</div>
-                    <div>
-                      {currentQuote.customerInfo?.company ||
-                        "Tech Solutions Inc."}
-                    </div>
-                    <div>
-                      {currentQuote.customerInfo?.email ||
-                        "john.smith@company.com"}
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-800 mb-3">
-                    Quote Information:
-                  </h3>
-                  <div className="text-sm space-y-1">
-                    <div>
-                      Date:{" "}
-                      {new Date(currentQuote.createdAt).toLocaleDateString()}
-                    </div>
-                    <div>Valid Until: {currentQuote.validUntil}</div>
-                    <div>Currency: {currentQuote.currency}</div>
-                    <div>
-                      Status:{" "}
-                      {currentQuote.status.charAt(0).toUpperCase() +
-                        currentQuote.status.slice(1)}
-                    </div>
-                  </div>
-                </div>
+              <div>
+                <h3 className="font-bold mb-2">QUOTE DETAILS:</h3>
+                <p>
+                  <strong>Created:</strong>{" "}
+                  {new Date(currentQuote.createdAt).toLocaleDateString()}
+                </p>
+                <p>
+                  <strong>Status:</strong>{" "}
+                  <span
+                    className={`capitalize ${
+                      currentQuote.status === "pending"
+                        ? "text-yellow-600"
+                        : currentQuote.status === "accepted"
+                        ? "text-green-600"
+                        : currentQuote.status === "declined"
+                        ? "text-red-600"
+                        : "text-slate-600"
+                    }`}
+                  >
+                    {currentQuote.status}
+                  </span>
+                </p>
+                <p>
+                  <strong>Expires:</strong> {currentQuote.validUntil}
+                </p>
+                {currentQuote.initialTermMonths && (
+                  <>
+                    <p>
+                      <strong>Initial Term:</strong>{" "}
+                      {currentQuote.initialTermMonths} months
+                    </p>
+                    <p>
+                      <strong>Renewal Period:</strong>{" "}
+                      {currentQuote.renewalPeriodMonths} months
+                    </p>
+                    <p>
+                      <strong>Non-renewal Notice:</strong>{" "}
+                      {currentQuote.nonRenewalNotice} days
+                    </p>
+                  </>
+                )}
               </div>
+            </div>
 
-              {/* Items Table */}
-              <div className="mb-8">
-                <h3 className="font-semibold text-slate-800 mb-4">
-                  Quote Items
-                </h3>
-                <table className="w-full border border-slate-300">
-                  <thead className="bg-slate-50">
-                    <tr>
-                      <th className="border border-slate-300 px-4 py-2 text-left text-sm font-semibold">
-                        Description
-                      </th>
-                      <th className="border border-slate-300 px-4 py-2 text-center text-sm font-semibold">
-                        Qty
-                      </th>
-                      <th className="border border-slate-300 px-4 py-2 text-right text-sm font-semibold">
-                        Unit Price (NRC)
-                      </th>
-                      <th className="border border-slate-300 px-4 py-2 text-right text-sm font-semibold">
-                        Unit Price (MRC)
-                      </th>
-                      <th className="border border-slate-300 px-4 py-2 text-right text-sm font-semibold">
-                        Total NRC
-                      </th>
-                      <th className="border border-slate-300 px-4 py-2 text-right text-sm font-semibold">
-                        Total MRC
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentQuote.items.map((item, index) => (
-                      <tr key={index}>
-                        <td className="border border-slate-300 px-4 py-2 text-sm">
-                          <div className="font-medium">{item.name}</div>
-                          <div className="text-slate-600 text-xs">
+            {/* Quote Items */}
+            <div className="mb-8 px-4 py-2 rounded-lg bg-slate-50 border border-slate-200 shadow-sm">
+              <h3 className="font-bold text-lg mb-4">Quote Items</h3>
+
+              {currentQuote.items.map((item, index) => {
+                const itemDiscounts = getItemDiscounts(item);
+                const originalPrice = getOriginalItemPrice(item);
+                const hasDiscounts = itemDiscounts.length > 0;
+
+                return (
+                  <div key={index} className="border border-slate-300 mb-6">
+                    {/* Item Header */}
+                    <div className="bg-slate-100 px-4 py-2 border-b border-slate-300">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-semibold">{item.name}</h4>
+                          <p className="text-xs text-slate-600">
                             {item.category}
+                          </p>
+                        </div>
+                        {hasDiscounts && (
+                          <div className="bg-green-100 text-green-700 text-xs font-medium px-2 py-1 rounded border border-green-200">
+                            💰 Discount Applied
                           </div>
-                        </td>
-                        <td className="border border-slate-300 px-4 py-2 text-center text-sm">
-                          {item.qty}
-                        </td>
-                        <td className="border border-slate-300 px-4 py-2 text-right text-sm">
-                          {formatCurrency(item.unitPrice.oneTime)}
-                        </td>
-                        <td className="border border-slate-300 px-4 py-2 text-right text-sm">
-                          {formatCurrency(item.unitPrice.recurring)}
-                        </td>
-                        <td className="border border-slate-300 px-4 py-2 text-right text-sm font-medium">
-                          {formatCurrency(item.totalPrice.oneTime)}
-                        </td>
-                        <td className="border border-slate-300 px-4 py-2 text-right text-sm font-medium">
-                          {formatCurrency(item.totalPrice.recurring)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        )}
+                      </div>
+                    </div>
 
-              {/* Totals */}
-              <div className="flex justify-end mb-8">
-                <div className="w-64">
-                  <div className="flex justify-between py-2 border-b border-slate-300">
-                    <span className="font-medium">Total One-time:</span>
-                    <span className="font-bold">
-                      {formatCurrency(currentQuote.finalTotals.oneTime)}
-                    </span>
+                    {/* Item Details Table */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead className="bg-slate-200">
+                          <tr>
+                            <th className="text-left px-4 py-2 border-b">
+                              Product Description
+                            </th>
+                            <th className="text-center px-4 py-2 border-b w-16">
+                              Qty
+                            </th>
+                            <th className="text-center px-4 py-2 border-b w-20">
+                              UoM
+                            </th>
+                            <th className="text-right px-4 py-2 border-b w-24">
+                              NRC
+                            </th>
+                            <th className="text-right px-4 py-2 border-b w-24">
+                              MRC
+                            </th>
+                            <th className="text-right px-4 py-2 border-b w-24">
+                              Total NRC
+                            </th>
+                            <th className="text-right px-4 py-2 border-b w-24">
+                              Total MRC
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {/* Main Product Row */}
+                          <tr>
+                            <td className="px-4 py-2 border-b">
+                              {item.name}
+                              {item.configuration &&
+                                Object.keys(item.configuration).length > 0 && (
+                                  <div className="mt-1 space-y-1">
+                                    {Object.entries(item.configuration).map(
+                                      ([key, value]) => {
+                                        if (
+                                          [
+                                            "status",
+                                            "completedCount",
+                                            "totalRequired",
+                                            "configuredAt",
+                                          ].includes(key)
+                                        )
+                                          return null;
+                                        return (
+                                          <div
+                                            key={key}
+                                            className="text-xs text-slate-600"
+                                          >
+                                            •{" "}
+                                            {key
+                                              .replace(/([A-Z])/g, " $1")
+                                              .trim()}
+                                            : {value}
+                                          </div>
+                                        );
+                                      }
+                                    )}
+                                  </div>
+                                )}
+                              {/* Show discount breakdown if applicable */}
+                              {hasDiscounts && (
+                                <div className="mt-2 space-y-1">
+                                  {itemDiscounts.map((discount, dIndex) => (
+                                    <div
+                                      key={dIndex}
+                                      className="text-xs text-green-700"
+                                    >
+                                      💰{" "}
+                                      {discount.pricingComponent === "oneTime"
+                                        ? "One-time"
+                                        : "Monthly"}{" "}
+                                      discount: -{fmt(discount.discountAmount)}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </td>
+                            <td className="text-center px-4 py-2 border-b">
+                              {item.qty}
+                            </td>
+                            <td className="text-center px-4 py-2 border-b">
+                              Each
+                            </td>
+                            <td className="text-right px-4 py-2 border-b">
+                              {fmt(item.unitPrice.oneTime)}
+                            </td>
+                            <td className="text-right px-4 py-2 border-b">
+                              {fmt(item.unitPrice.recurring)}
+                            </td>
+                            <td className="text-right px-4 py-2 border-b">
+                              {hasDiscounts &&
+                              originalPrice.oneTime >
+                                item.totalPrice.oneTime ? (
+                                <div>
+                                  <div className="text-xs text-slate-600 line-through">
+                                    {fmt(originalPrice.oneTime)}
+                                  </div>
+                                  <div className="text-green-700 font-semibold">
+                                    {fmt(item.totalPrice.oneTime)}
+                                  </div>
+                                </div>
+                              ) : (
+                                fmt(item.totalPrice.oneTime)
+                              )}
+                            </td>
+                            <td className="text-right px-4 py-2 border-b">
+                              {hasDiscounts &&
+                              originalPrice.recurring >
+                                item.totalPrice.recurring ? (
+                                <div>
+                                  <div className="text-xs text-slate-600 line-through">
+                                    {fmt(originalPrice.recurring)}
+                                  </div>
+                                  <div className="text-green-700 font-semibold">
+                                    {fmt(item.totalPrice.recurring)}
+                                  </div>
+                                </div>
+                              ) : (
+                                fmt(item.totalPrice.recurring)
+                              )}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Item Section Total */}
+                    <div className="bg-slate-100 px-4 py-2 text-sm">
+                      <div className="flex justify-between font-semibold">
+                        <span>Section Total</span>
+                        <div className="space-x-8">
+                          <span>{fmt(item.totalPrice.oneTime)}</span>
+                          <span>{fmt(item.totalPrice.recurring)}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-slate-300">
-                    <span className="font-medium">Total Monthly:</span>
-                    <span className="font-bold">
-                      {formatCurrency(currentQuote.finalTotals.recurring)}
-                    </span>
+                );
+              })}
+            </div>
+
+            {/* Pricing Summary */}
+            <div className="border-t-2 border-slate-800 pt-6">
+              <div className="flex justify-between items-start">
+                <div className="space-y-2 text-sm">
+                  <h3 className="font-bold text-lg">Grand Total</h3>
+                  <p>
+                    <strong>One-time charges:</strong>{" "}
+                    {fmt(currentQuote.finalTotals?.oneTime || 0)}
+                  </p>
+                  <p>
+                    <strong>Monthly recurring charges:</strong>{" "}
+                    {fmt(currentQuote.finalTotals?.recurring || 0)}
+                  </p>
+
+                  {(currentQuote.totalSavings || 0) > 0 && (
+                    <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-green-700 font-semibold">
+                        Total Savings: {fmt(currentQuote.totalSavings)}
+                      </p>
+                      <p className="text-xs text-green-600 mt-1">
+                        Original Total:{" "}
+                        {fmt(
+                          (currentQuote.originalTotals?.oneTime || 0) +
+                            (currentQuote.originalTotals?.recurring || 0)
+                        )}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="text-right">
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <p className="text-sm text-blue-700 mb-2">Quote Total</p>
+                    <p className="text-2xl font-bold text-blue-600">
+                      {fmt(currentQuote.finalTotals?.oneTime || 0)}
+                    </p>
+                    {(currentQuote.finalTotals?.recurring || 0) > 0 && (
+                      <p className="text-lg font-semibold text-blue-600">
+                        {fmt(currentQuote.finalTotals.recurring)}/mo
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Terms and Conditions */}
+            <div className="mt-8 pt-6 border-t text-xs text-slate-600">
+              <p className="mb-2">
+                <strong>Terms:</strong> From the Effective Date, the Licensed
+                Space and Services shall be provided to Customer free of charge
+                for the number of months indicated in the Free Months column
+                above.
+              </p>
+              <p className="text-center mt-4">
+                <strong>Quote Number:</strong> {currentQuote.quoteNumber} | Page
+                1 of 2
+              </p>
+            </div>
+
+            {/* Page Break for Terms and Conditions */}
+            <div className="print:break-before-page mt-12 pt-8">
+              <div className="border-b-2 border-red-600 pb-6 mb-8">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h1 className="text-red-600 text-2xl font-bold tracking-tight mb-2">
+                      EQUINIX TERMS AND CONDITIONS
+                    </h1>
+                    <div className="space-y-1 text-sm">
+                      <p>
+                        <strong>Quote Number:</strong>{" "}
+                        {currentQuote.quoteNumber}
+                      </p>
+                      <p>
+                        <strong>Customer:</strong>{" "}
+                        {currentQuote.customerInfo?.company ||
+                          "Tech Solutions Inc."}
+                      </p>
+                      <p>
+                        <strong>Effective Date:</strong>{" "}
+                        {new Date(currentQuote.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="w-24 h-24 bg-red-600 text-white flex items-center justify-center text-xs font-bold">
+                      EQUINIX LOGO
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Terms */}
-              <div className="mb-6">
-                <h3 className="font-semibold text-slate-800 mb-3">
-                  Terms & Conditions
-                </h3>
-                <div className="text-xs text-slate-600 space-y-2">
-                  <p>
-                    • This quote is valid for 30 days from the date of issue.
-                  </p>
-                  <p>• Payment terms: Net 30 days from invoice date.</p>
-                  <p>• One-time charges are due upon service activation.</p>
-                  <p>
-                    • Monthly recurring charges begin upon service activation.
-                  </p>
-                  <p>
-                    • Initial contract term: {currentQuote.initialTermMonths}{" "}
-                    months.
-                  </p>
-                  <p>
-                    • Auto-renewal for {currentQuote.renewalPeriodMonths} month
-                    periods unless {currentQuote.nonRenewalNotice} days written
-                    notice is provided.
-                  </p>
-                  <p>
-                    • Services subject to Equinix Master Service Agreement and
-                    Service Level Agreement.
-                  </p>
-                </div>
+              {/* Terms and Conditions Content */}
+              <div className="space-y-6 text-sm leading-relaxed">
+                <section>
+                  <h3 className="font-bold text-lg mb-3 text-slate-800">
+                    1. GENERAL TERMS
+                  </h3>
+                  <div className="space-y-2">
+                    <p>
+                      <strong>1.1 Agreement.</strong> This Quote, when accepted
+                      by Customer and executed by Equinix, shall constitute a
+                      binding agreement ("Agreement") between Equinix, Inc.
+                      ("Equinix") and the customer identified above ("Customer")
+                      for the provision of colocation, interconnection, and
+                      related services ("Services") at the Equinix International
+                      Business Exchange™ facilities.
+                    </p>
+                    <p>
+                      <strong>1.2 Services.</strong> Equinix shall provide the
+                      Services described in this Quote in accordance with
+                      Equinix's standard terms and conditions, service level
+                      agreements, and acceptable use policies, all of which are
+                      incorporated herein by reference and available at
+                      www.equinix.com/company/legal/.
+                    </p>
+                    <p>
+                      <strong>1.3 Term.</strong> The initial term shall commence
+                      on the date Equinix makes the Services available to
+                      Customer and shall continue for the period specified in
+                      this Quote. The Agreement shall automatically renew for
+                      successive renewal periods as specified herein unless
+                      either party provides written notice of non-renewal at
+                      least {currentQuote.nonRenewalNotice || 30} days prior to
+                      the end of the then-current term.
+                    </p>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="font-bold text-lg mb-3 text-slate-800">
+                    2. PAYMENT TERMS
+                  </h3>
+                  <div className="space-y-2">
+                    <p>
+                      <strong>2.1 Fees.</strong> Customer shall pay all fees
+                      specified in this Quote. One-time fees are due upon
+                      execution of this Agreement. Recurring fees are due
+                      monthly in advance. All fees are non-refundable except as
+                      expressly provided herein.
+                    </p>
+                    <p>
+                      <strong>2.2 Payment.</strong> Payment terms are net 30
+                      days from invoice date. Late payments may be subject to a
+                      service charge of 1.5% per month or the maximum rate
+                      permitted by law, whichever is less. All fees are
+                      exclusive of taxes, duties, and other governmental
+                      charges.
+                    </p>
+                    <p>
+                      <strong>2.3 Price Changes.</strong> Equinix may increase
+                      recurring fees upon 90 days' written notice, but not more
+                      than once per calendar year during the initial term.
+                    </p>
+                  </div>
+                </section>
+
+                <section>
+                  <h3 className="font-bold text-lg mb-3 text-slate-800">
+                    3. ACCEPTANCE
+                  </h3>
+                  <div className="space-y-4">
+                    <p>
+                      By accepting this Quote, Customer acknowledges that it has
+                      read, understood, and agrees to be bound by these terms
+                      and conditions.
+                    </p>
+
+                    <div className="grid grid-cols-2 gap-8 mt-8 pt-4 border-t">
+                      <div>
+                        <p className="font-bold mb-4">EQUINIX, INC.</p>
+                        <div className="border-b border-gray-400 mb-2 h-8 flex items-end">
+                          <span className="text-sm italic text-slate-600">
+                            Authorized Representative
+                          </span>
+                        </div>
+                        <p className="text-xs">Signature</p>
+                        <div className="mt-4">
+                          <div className="border-b border-gray-400 mb-2 h-8 flex items-end">
+                            <span className="text-sm italic text-slate-600">
+                              Sales Representative
+                            </span>
+                          </div>
+                          <p className="text-xs">Print Name and Title</p>
+                        </div>
+                        <div className="mt-4">
+                          <div className="border-b border-gray-400 mb-2 h-8 flex items-end">
+                            <span className="text-sm italic text-slate-600">
+                              {new Date(
+                                currentQuote.createdAt
+                              ).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="text-xs">Date</p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <p className="font-bold mb-4">
+                          {(
+                            currentQuote.customerInfo?.company ||
+                            "TECH SOLUTIONS INC."
+                          ).toUpperCase()}
+                        </p>
+                        {/* Show electronic signature if accepted */}
+                        {currentQuote.status === "accepted" ? (
+                          <div>
+                            <div className="bg-green-50 border border-green-200 rounded p-3 mb-2">
+                              <div className="text-sm font-semibold text-green-800">
+                                ✓ ELECTRONICALLY SIGNED
+                              </div>
+                              <div className="text-xs text-green-700 mt-1">
+                                Signed by:{" "}
+                                {currentQuote.customerInfo?.name ||
+                                  "John Smith"}
+                                <br />
+                                Email:{" "}
+                                {currentQuote.customerInfo?.email ||
+                                  "john.smith@company.com"}
+                                <br />
+                                Date:{" "}
+                                {new Date(
+                                  currentQuote.createdAt
+                                ).toLocaleString()}
+                              </div>
+                            </div>
+                            <p className="text-xs">Electronic Signature</p>
+                          </div>
+                        ) : currentQuote.status === "declined" ? (
+                          <div>
+                            <div className="bg-red-50 border border-red-200 rounded p-3 mb-2">
+                              <div className="text-sm font-semibold text-red-800">
+                                ✗ DECLINED
+                              </div>
+                              <div className="text-xs text-red-700 mt-1">
+                                Declined by:{" "}
+                                {currentQuote.customerInfo?.name ||
+                                  "John Smith"}
+                                <br />
+                                Email:{" "}
+                                {currentQuote.customerInfo?.email ||
+                                  "john.smith@company.com"}
+                                <br />
+                                Date:{" "}
+                                {new Date(
+                                  currentQuote.createdAt
+                                ).toLocaleString()}
+                              </div>
+                            </div>
+                            <p className="text-xs">Electronic Response</p>
+                          </div>
+                        ) : (
+                          <div>
+                            <div className="border-b border-gray-400 mb-2 h-8"></div>
+                            <p className="text-xs">Signature</p>
+                          </div>
+                        )}
+                        <div className="mt-4">
+                          <div className="border-b border-gray-400 mb-2 h-8 flex items-end">
+                            {currentQuote.status === "accepted" && (
+                              <span className="text-sm italic text-slate-600">
+                                {currentQuote.customerInfo?.name ||
+                                  "John Smith"}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs">Print Name and Title</p>
+                        </div>
+                        <div className="mt-4">
+                          <div className="border-b border-gray-400 mb-2 h-8 flex items-end">
+                            {currentQuote.status === "accepted" && (
+                              <span className="text-sm italic text-slate-600">
+                                {new Date(
+                                  currentQuote.createdAt
+                                ).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs">Date</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
               </div>
 
-              {/* Footer */}
-              <div className="text-center text-xs text-slate-500 mt-8 pt-4 border-t border-slate-300">
-                <p>Equinix, Inc. | One Lagoon Drive | Redwood City, CA 94065</p>
-                <p>Phone: +1 650 598 6000 | www.equinix.com</p>
+              {/* Page Footer */}
+              <div className="mt-8 pt-4 border-t text-xs text-slate-600 text-center">
+                <p>
+                  <strong>Quote Number:</strong> {currentQuote.quoteNumber} |
+                  Page 2 of 2
+                </p>
+                <p className="mt-2">
+                  Equinix, Inc. | One Lagoon Drive | Redwood City, CA 94065 |
+                  www.equinix.com
+                </p>
               </div>
             </div>
 
-            <div className="flex justify-between items-center p-6 border-t border-slate-200 bg-slate-50">
-              <button
-                onClick={() => window.print()}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            {/* Status Banner for non-pending quotes */}
+            {currentQuote.status !== "pending" && (
+              <div
+                className={`mt-8 p-4 rounded-lg text-center font-semibold ${
+                  currentQuote.status === "accepted"
+                    ? "bg-green-100 text-green-800 border border-green-200"
+                    : currentQuote.status === "declined"
+                    ? "bg-red-100 text-red-800 border border-red-200"
+                    : "bg-slate-100 text-slate-800 border border-slate-300"
+                }`}
               >
-                <FileText className="w-4 h-4" />
-                Print/Download
-              </button>
-              <button
-                onClick={() => setShowDocument(false)}
-                className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
-              >
-                Close
-              </button>
-            </div>
+                Quote Status:{" "}
+                {currentQuote.status.charAt(0).toUpperCase() +
+                  currentQuote.status.slice(1)}
+                {currentQuote.status === "accepted" && (
+                  <div className="text-sm mt-1">
+                    Order has been created and is ready for configuration.
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

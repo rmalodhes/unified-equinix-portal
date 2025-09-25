@@ -369,32 +369,63 @@ const Quotes = () => {
                                     configCount === 0
                                   ) {
                                     return (
-                                      <div className="flex items-center gap-2">
-                                        <span className="px-4 py-2 rounded-lg font-medium flex items-center space-x-2 shadow-sm bg-emerald-100 text-emerald-800 border border-emerald-500">
-                                          <CheckCircle2 className="w-4 h-4" />
-                                          <span>
-                                            Configured ({totalConfigured}/
-                                            {totalConfigurable})
+                                      <div className="flex flex-col gap-1">
+                                        <div className="flex items-center gap-2">
+                                          <span className="px-4 py-2 rounded-lg font-medium flex items-center space-x-2 shadow-sm bg-emerald-100 text-emerald-800 border border-emerald-500">
+                                            <CheckCircle2 className="w-4 h-4" />
+                                            <span>
+                                              Configured ({totalConfigured}/
+                                              {totalConfigurable})
+                                            </span>
                                           </span>
-                                        </span>
+                                        </div>
+                                        <div className="w-full bg-emerald-200 rounded-full h-1.5">
+                                          <div className="bg-emerald-600 h-1.5 rounded-full w-full"></div>
+                                        </div>
                                       </div>
                                     );
                                   }
 
-                                  // Show configure button with count - styled to match QuoteDetails
+                                  // Show configure button with configured/total format and progress bar
                                   return (
-                                    <button
-                                      onClick={() =>
-                                        navigate(`/quoteDetails?id=${quote.id}`)
-                                      }
-                                      className="px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-sm bg-blue-600 text-white hover:bg-blue-700"
-                                    >
-                                      <Settings className="w-4 h-4" />
-                                      <span>
-                                        Configure
-                                        {configCount > 0 && ` (${configCount})`}
-                                      </span>
-                                    </button>
+                                    <div className="flex flex-col gap-1">
+                                      <button
+                                        onClick={() =>
+                                          navigate(
+                                            `/quoteDetails?id=${quote.id}`
+                                          )
+                                        }
+                                        className="px-4 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2 shadow-sm bg-blue-600 text-white hover:bg-blue-700"
+                                      >
+                                        <Settings className="w-4 h-4" />
+                                        <span>
+                                          Configure ({totalConfigured}/
+                                          {totalConfigurable})
+                                        </span>
+                                      </button>
+                                      {totalConfigurable > 0 && (
+                                        <div className="w-full bg-slate-200 rounded-full h-1.5">
+                                          <div
+                                            className={`h-1.5 rounded-full transition-all duration-300 ${
+                                              totalConfigured ===
+                                              totalConfigurable
+                                                ? "bg-emerald-500"
+                                                : totalConfigured > 0
+                                                ? "bg-yellow-500"
+                                                : "bg-red-400"
+                                            }`}
+                                            style={{
+                                              width: `${Math.max(
+                                                8,
+                                                (totalConfigured /
+                                                  totalConfigurable) *
+                                                  100
+                                              )}%`,
+                                            }}
+                                          ></div>
+                                        </div>
+                                      )}
+                                    </div>
                                   );
                                 })()}
                             </div>
