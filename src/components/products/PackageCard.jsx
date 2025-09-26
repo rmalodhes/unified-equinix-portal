@@ -38,7 +38,30 @@ const PackageCard = ({ packageData }) => {
                 const packageWithConfig = {
                   ...packageData,
                   id: Date.now(),
+                  name: packageData.name,
+                  category: packageData.category,
+                  description: packageData.description,
+                  // Pricing structure with setup fees
                   price: packageData.discountedPrice,
+                  oneTimePrice: packageData.discountedSetupFee || packageData.setupFee || 0,
+                  unitPrice: {
+                    oneTime: packageData.discountedSetupFee || packageData.setupFee || 0,
+                    recurring: packageData.discountedPrice
+                  },
+                  totalPrice: {
+                    oneTime: packageData.discountedSetupFee || packageData.setupFee || 0,
+                    recurring: packageData.discountedPrice
+                  },
+                  qty: 1,
+                  // Package-specific info
+                  originalPrice: packageData.originalPrice,
+                  discountedPrice: packageData.discountedPrice,
+                  discount: packageData.discount,
+                  setupFee: packageData.setupFee,
+                  discountedSetupFee: packageData.discountedSetupFee,
+                  includedProducts: packageData.includedProducts,
+                  features: packageData.features,
+                  selectedOptions: packageData.configuration,
                   configuration: {
                     ...packageData.configuration,
                     configuredAt: new Date().toISOString(),
@@ -58,7 +81,30 @@ const PackageCard = ({ packageData }) => {
                 const packageWithConfig = {
                   ...packageData,
                   id: Date.now(),
+                  name: packageData.name,
+                  category: packageData.category,
+                  description: packageData.description,
+                  // Pricing structure with setup fees
                   price: packageData.discountedPrice,
+                  oneTimePrice: packageData.discountedSetupFee || packageData.setupFee || 0,
+                  unitPrice: {
+                    oneTime: packageData.discountedSetupFee || packageData.setupFee || 0,
+                    recurring: packageData.discountedPrice
+                  },
+                  totalPrice: {
+                    oneTime: packageData.discountedSetupFee || packageData.setupFee || 0,
+                    recurring: packageData.discountedPrice
+                  },
+                  qty: 1,
+                  // Package-specific info
+                  originalPrice: packageData.originalPrice,
+                  discountedPrice: packageData.discountedPrice,
+                  discount: packageData.discount,
+                  setupFee: packageData.setupFee,
+                  discountedSetupFee: packageData.discountedSetupFee,
+                  includedProducts: packageData.includedProducts,
+                  features: packageData.features,
+                  selectedOptions: packageData.configuration,
                   configuration: {
                     ...packageData.configuration,
                     configuredAt: new Date().toISOString(),
@@ -78,22 +124,49 @@ const PackageCard = ({ packageData }) => {
 
         {/* Pricing Section */}
         <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 via-indigo-50 to-cyan-50 rounded-xl border border-blue-100 group-hover:shadow-lg transition-all duration-300">
+          <div className="grid grid-cols-2 gap-4 mb-3">
+            {/* Monthly Pricing */}
+            <div>
+              <div className="text-xs text-gray-500 font-medium mb-1">Monthly</div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500 line-through">
+                  ${packageData.originalPrice}
+                </span>
+                <span className="text-xl font-bold text-green-600">
+                  ${packageData.discountedPrice}
+                </span>
+              </div>
+            </div>
+            
+            {/* Setup Fee */}
+            <div>
+              <div className="text-xs text-gray-500 font-medium mb-1">Setup Fee</div>
+              <div className="flex items-center gap-2">
+                {packageData.setupFee && packageData.discountedSetupFee ? (
+                  <>
+                    <span className="text-sm text-gray-500 line-through">
+                      ${packageData.setupFee}
+                    </span>
+                    <span className="text-xl font-bold text-blue-600">
+                      ${packageData.discountedSetupFee}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-xl font-bold text-blue-600">
+                    ${packageData.setupFee || 0}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-lg text-gray-500 line-through">
-                ${packageData.originalPrice}/month
-              </span>
-              <span className="text-2xl font-bold text-green-600">
-                ${packageData.discountedPrice}/month
-              </span>
+            <div className="text-sm text-gray-600">
+              Save ${(packageData.originalPrice - packageData.discountedPrice) + ((packageData.setupFee || 0) - (packageData.discountedSetupFee || 0))} total
             </div>
             <div className="bg-red-500 text-white px-2 py-1 rounded-full text-sm font-semibold">
               {packageData.discount}% OFF
             </div>
-          </div>
-          <div className="text-sm text-gray-600 mt-1">
-            Save ${packageData.originalPrice - packageData.discountedPrice} per
-            month
           </div>
         </div>
 

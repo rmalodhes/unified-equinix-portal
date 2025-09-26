@@ -304,6 +304,7 @@ export default function Configuration() {
           )}
 
           {(lineItem.key === "ethernet-cross-connect" ||
+            lineItem.key === "cross-connect" ||
             lineItem.category === "Interconnection") && (
             <div className="space-y-6">
               <div>
@@ -411,7 +412,7 @@ export default function Configuration() {
           )}
 
           {/* Generic configuration for other products */}
-          {!["secure-cabinet", "ethernet-cross-connect"].includes(
+          {!["secure-cabinet", "ethernet-cross-connect", "cross-connect"].includes(
             lineItem.key
           ) &&
             !["Colocation", "Interconnection"].includes(lineItem.category) && (

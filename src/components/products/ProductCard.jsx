@@ -33,13 +33,31 @@ const ProductCard = ({ productKey, product }) => {
               </span>
             </div>
           </div>
-          <button
-            onClick={() => navigate(`orderDetails?product=${productKey}`)}
-            className="btn-primary flex items-center gap-2 group-hover:shadow-xl group-hover:scale-105"
-            aria-label={`Configure ${product.name}`}
-          >
-            Create New
-          </button>
+          <div className="flex items-center gap-3">
+            {/* View Provider Link - Only for Interconnection products */}
+            {product.category === "Interconnection" && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Add navigation logic for provider view
+                  navigate(`providers?product=${productKey}`);
+                }}
+                className="text-sm text-gray-600 hover:text-indigo-600 font-medium hover:underline transition-colors duration-200 flex items-center gap-1"
+              >
+                View Providers
+                <svg className="w-4 h-4 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </button>
+            )}
+            <button
+              onClick={() => navigate(`orderDetails?product=${productKey}`)}
+              className="btn-primary flex items-center gap-2 group-hover:shadow-xl group-hover:scale-105"
+              aria-label={`Configure ${product.name}`}
+            >
+              Create New
+            </button>
+          </div>
         </div>
 
         {/* <p className="text-gray-600 text-sm mb-4 leading-relaxed group-hover:text-gray-700 transition-colors duration-300">
@@ -53,17 +71,6 @@ const ProductCard = ({ productKey, product }) => {
               <h4 className="text-sm font-semibold text-gray-800">
                 Quick Start Templates
               </h4>
-              {hasMoreTemplates && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowTemplateModal(true);
-                  }}
-                  className="text-xs text-indigo-600 hover:text-indigo-700 font-medium hover:underline"
-                >
-                  View More ({templates.length})
-                </button>
-              )}
             </div>
 
             <div className="grid grid-cols-3 gap-3">
@@ -78,6 +85,22 @@ const ProductCard = ({ productKey, product }) => {
             </div>
           </div>
         )}
+
+        {/* View More Link - Always shown in bottom right corner */}
+        <div className="mt-6 border-gray-100 flex justify-end">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowTemplateModal(true);
+            }}
+            className="text-sm text-indigo-600 hover:text-indigo-700 font-medium hover:underline transition-colors duration-200 flex items-center gap-1"
+          >
+            View More
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
       </div>
       {/* Template Modal */}
       <TemplateModal

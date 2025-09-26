@@ -20,6 +20,8 @@ export const packageData = {
     originalPrice: 1470, // Sum of individual prices: 850 + 120 + 500
     discountedPrice: 1200,
     discount: 18, // percentage
+    setupFee: 400, // One-time setup fee for package
+    discountedSetupFee: 300, // Discounted setup fee
     includedProducts: [
       {
         name: "Secure Cabinet Express",
@@ -65,6 +67,8 @@ export const packageData = {
     originalPrice: 2200, // Sum: 750 + 1200 + 250
     discountedPrice: 1850,
     discount: 16,
+    setupFee: 800, // One-time setup fee for enterprise package
+    discountedSetupFee: 600, // Discounted setup fee
     includedProducts: [
       {
         name: "Metro Connect",
@@ -110,6 +114,8 @@ export const packageData = {
     originalPrice: 1420, // Sum: 850 + 120 + 450
     discountedPrice: 1150,
     discount: 19,
+    setupFee: 250, // One-time setup fee for startup package
+    discountedSetupFee: 200, // Discounted setup fee
     includedProducts: [
       {
         name: "Secure Cabinet Express",

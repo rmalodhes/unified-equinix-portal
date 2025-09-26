@@ -30,9 +30,21 @@ const QuoteDetails = () => {
 
     const item = currentQuote.items[itemIndex];
 
-    if (item.needsConfiguration) {
+    // Check if configuration is required using the same robust check
+    const requiresConfiguration =
+      item.product?.configurationRequired ||
+      item.needsConfiguration ||
+      item.configurationProgress !== undefined ||
+      item.configurationStatus ||
+      (item.key && ['secure-cabinet', 'ethernet-cross-connect', 'cross-connect'].includes(item.key)) ||
+      (item.name && item.name.toLowerCase().includes('cross connect'));
+
+    if (requiresConfiguration) {
       // Navigate to configuration page
       navigate(`/configuration/${currentQuote.id}/${itemIndex}`);
+    } else {
+      console.warn("Item does not require configuration:", item);
+      alert("This item does not require configuration.");
     }
   };
 
@@ -266,9 +278,16 @@ const QuoteDetails = () => {
     }
 
     // Check if all configurable items are configured
-    const configurableItems = currentQuote.items.filter(
-      (item) => item.needsConfiguration
-    );
+    const configurableItems = currentQuote.items.filter((item) => {
+      return (
+        item.product?.configurationRequired || 
+        item.needsConfiguration ||
+        item.configurationProgress !== undefined ||
+        item.configurationStatus ||
+        (item.key && ['secure-cabinet', 'ethernet-cross-connect', 'cross-connect'].includes(item.key)) ||
+        (item.name && item.name.toLowerCase().includes('cross connect'))
+      );
+    });
     const unconfiguredItems = configurableItems.filter(
       (item) => item.configurationProgress < 100
     );
@@ -572,7 +591,12 @@ const QuoteDetails = () => {
           // Use current product definitions to check configuration requirements
           const configurableItems = currentQuote.items.filter((item) => {
             return (
-              item.product?.configurationRequired || item.needsConfiguration
+              item.product?.configurationRequired || 
+              item.needsConfiguration ||
+              item.configurationProgress !== undefined ||
+              item.configurationStatus ||
+              (item.key && ['secure-cabinet', 'ethernet-cross-connect', 'cross-connect'].includes(item.key)) ||
+              (item.name && item.name.toLowerCase().includes('cross connect'))
             );
           });
 
@@ -793,9 +817,27 @@ const QuoteDetails = () => {
 
                       {/* Configuration Status - show for all configurable products */}
                       {(() => {
+                        // Check multiple conditions to determine if configuration is required
                         const requiresConfiguration =
                           item.product?.configurationRequired ||
-                          item.needsConfiguration;
+                          item.needsConfiguration ||
+                          item.configurationProgress !== undefined ||
+                          item.configurationStatus ||
+                          (item.key && ['secure-cabinet', 'ethernet-cross-connect', 'cross-connect'].includes(item.key)) ||
+                          (item.name && item.name.toLowerCase().includes('cross connect'));
+
+                        // Debug logging (remove in production)
+                        if (currentQuote.status === "accepted") {
+                          console.log("Configuration check for item:", {
+                            name: item.name,
+                            key: item.key,
+                            productConfigRequired: item.product?.configurationRequired,
+                            needsConfiguration: item.needsConfiguration,
+                            configurationProgress: item.configurationProgress,
+                            configurationStatus: item.configurationStatus,
+                            requiresConfiguration
+                          });
+                        }
 
                         if (
                           !requiresConfiguration ||
@@ -1202,7 +1244,7 @@ const QuoteDetails = () => {
           </div>
 
           {/* Quote Document */}
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:px-0 print:py-0">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:px-0 print:py-0 overflow-y-auto max-h-screen">
             {/* Quote Header */}
             <div className="border-b-2 border-red-600 pb-6 mb-8">
               <div className="flex justify-between items-start">

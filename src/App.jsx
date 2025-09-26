@@ -2,6 +2,9 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/common/Navbar";
 import HomePage from "./pages/HomePage";
+import Products from "./pages/Products";
+import Solutions from "./pages/Solutions";
+import SolutionsFlow from "./pages/SolutionsFlow";
 import Cart from "./pages/Cart";
 import Packages from "./pages/Packages";
 import Quotes from "./pages/Quotes";
@@ -20,6 +23,9 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/solutions" element={<Solutions />} />
+        <Route path="/solutions-flow" element={<SolutionsFlow />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/orderDetails" element={<OrderDetails />} />
         <Route path="/packages" element={<Packages />} />

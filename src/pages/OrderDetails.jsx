@@ -72,7 +72,7 @@ const OrderDetails = () => {
         [field]: value,
       };
 
-      // Reset PDU selection when circuit type changes
+      // Reset PDU selection when circuit type chang
       if (field === "circuitType" && currentProduct?.key === "secure-cabinet") {
         newConfig.pdu = "";
         newConfig.pduCount = 0;
@@ -163,6 +163,7 @@ const OrderDetails = () => {
 
   // Pricing calculator for secure cabinet
   const calculateSecureCabinetPricing = () => {
+    
     const baseCabinetPrice = { mrc: 1200, nrc: 200 }; // Standard Cabinet base price
     let totalMrc = baseCabinetPrice.mrc;
     let totalNrc = baseCabinetPrice.nrc;
@@ -244,32 +245,183 @@ const OrderDetails = () => {
     };
   };
 
-  const handleAddToCart = () => {
-    if (currentProduct) {
-      const productWithConfig = {
-        ...currentProduct,
-        id: Date.now(),
-        price: estimatedPrice,
-        configuration: {
-          ...configuration,
-          configuredAt: new Date().toISOString(),
-        },
-      };
-      addToCart(productWithConfig);
-      navigate("cart");
+  const buildProductWithConfig = () => {
+    if (!currentProduct) return null;
+
+    // Calculate pricing based on current configuration
+    const pricing = currentProduct.key === "secure-cabinet" ? calculateSecureCabinetPricing() : null;
+    
+    // Get template pricing if available
+    const templateMrcPricing = configuration.templateMrcPricing;
+    const templateNrcPricing = configuration.templateNrcPricing;
+    
+    // Parse pricing from template strings (e.g., "$850" -> 850)
+    const parsePrice = (priceString) => {
+      if (!priceString) return 0;
+      return parseFloat(priceString.replace(/[^0-9.]/g, '')) || 0;
+    };
+    
+    // Use template pricing first (if available), then calculated pricing, then estimated price
+    let oneTimePrice, recurringPrice;
+    if (templateMrcPricing && templateNrcPricing) {
+      // Use template pricing (highest priority)
+      oneTimePrice = parsePrice(templateNrcPricing);
+      recurringPrice = parsePrice(templateMrcPricing);
+    } else if (pricing) {
+      // Use dynamic calculated pricing
+      oneTimePrice = pricing.totals.nrc;
+      recurringPrice = pricing.totals.mrc;
+    } else {
+      // Fallback to estimated pricing
+      oneTimePrice = 0;
+      recurringPrice = estimatedPrice;
     }
+    
+    // Get template for essential details
+    const templateId = configuration.templateId;
+    let templateDetails = null;
+    if (templateId) {
+      const templates = currentProduct.essentialTemplates || currentProduct.templates || [];
+      templateDetails = templates.find(t => t.id === templateId);
+    }
+    
+    return {
+      ...currentProduct,
+      id: Date.now(),
+      name: currentProduct.name,
+      category: currentProduct.category,
+      description: currentProduct.description,
+      // Pricing structure
+      price: recurringPrice, // For backward compatibility
+      oneTimePrice: oneTimePrice,
+      unitPrice: {
+        oneTime: oneTimePrice,
+        recurring: recurringPrice
+      },
+      totalPrice: {
+        oneTime: oneTimePrice,
+        recurring: recurringPrice
+      },
+      qty: 1,
+      // Configuration and template details
+      selectedOptions: configuration,
+      configuration: {
+        ...configuration,
+        configuredAt: new Date().toISOString(),
+      },
+      // Essential details from template
+      essentialDetails: templateDetails?.essentialDetails || [],
+      templateName: configuration.templateName,
+      // Location info
+      location: configuration.ibx || 'Not specified',
+      ibx: configuration.ibx,
+      cage: configuration.cage,
+      
+      // Set configuration flags for known configurable products
+      needsConfiguration: ['secure-cabinet', 'ethernet-cross-connect', 'cross-connect'].includes(currentProduct.key) || 
+                         (currentProduct.name && currentProduct.name.toLowerCase().includes('cross connect')),
+      configurationProgress: 0,
+      configurationStatus: 'pending',
+    };
+  };
+
+  const handleAddToCartWithRecommendations = () => {
+    const productWithConfig = buildProductWithConfig();
+    if (productWithConfig) {
+      addToCart(productWithConfig);
+      
+      // Navigate to solutions flow with product data
+      const productData = encodeURIComponent(JSON.stringify(productWithConfig));
+      navigate(`/solutions-flow?product=${productData}`);
+    }
+  };
+
+  const handleAddToCartDirectly = () => {
+    const productWithConfig = buildProductWithConfig();
+    if (productWithConfig) {
+      addToCart(productWithConfig);
+      navigate("/cart");
+    }
+  };
+
+  // Check if current product is a cross connect
+  const isCrossConnectProduct = () => {
+    return currentProduct && (
+      ['ethernet-cross-connect', 'cross-connect'].includes(currentProduct.key) || 
+      (currentProduct.name && currentProduct.name.toLowerCase().includes('cross connect'))
+    );
   };
 
   const handleAddToPackage = () => {
     if (currentProduct) {
+      // Calculate pricing based on current configuration
+      const pricing = currentProduct.key === "secure-cabinet" ? calculateSecureCabinetPricing() : null;
+      
+      // Get template pricing if available
+      const templateMrcPricing = configuration.templateMrcPricing;
+      const templateNrcPricing = configuration.templateNrcPricing;
+      
+      // Parse pricing from template strings (e.g., "$850" -> 850)
+      const parsePrice = (priceString) => {
+        if (!priceString) return 0;
+        return parseFloat(priceString.replace(/[^0-9.]/g, '')) || 0;
+      };
+      
+      // Use template pricing first (if available), then calculated pricing, then estimated price
+      let oneTimePrice, recurringPrice;
+      if (templateMrcPricing && templateNrcPricing) {
+        // Use template pricing (highest priority)
+        oneTimePrice = parsePrice(templateNrcPricing);
+        recurringPrice = parsePrice(templateMrcPricing);
+      } else if (pricing) {
+        // Use dynamic calculated pricing
+        oneTimePrice = pricing.totals.nrc;
+        recurringPrice = pricing.totals.mrc;
+      } else {
+        // Fallback to estimated pricing
+        oneTimePrice = 0;
+        recurringPrice = estimatedPrice;
+      }
+      
+      // Get template for essential details
+      const templateId = configuration.templateId;
+      let templateDetails = null;
+      if (templateId) {
+        const templates = currentProduct.essentialTemplates || currentProduct.templates || [];
+        templateDetails = templates.find(t => t.id === templateId);
+      }
+      
       const productWithConfig = {
         ...currentProduct,
         id: Date.now(),
-        price: estimatedPrice,
+        name: currentProduct.name,
+        category: currentProduct.category,
+        description: currentProduct.description,
+        // Pricing structure
+        price: recurringPrice, // For backward compatibility
+        oneTimePrice: oneTimePrice,
+        unitPrice: {
+          oneTime: oneTimePrice,
+          recurring: recurringPrice
+        },
+        totalPrice: {
+          oneTime: oneTimePrice,
+          recurring: recurringPrice
+        },
+        qty: 1,
+        // Configuration and template details
+        selectedOptions: configuration,
         configuration: {
           ...configuration,
           configuredAt: new Date().toISOString(),
         },
+        // Essential details from template
+        essentialDetails: templateDetails?.essentialDetails || [],
+        templateName: configuration.templateName,
+        // Location info
+        location: configuration.ibx || 'Not specified',
+        ibx: configuration.ibx,
+        cage: configuration.cage,
       };
       addToPackages(productWithConfig);
       navigate("packages");
@@ -282,8 +434,8 @@ const OrderDetails = () => {
         <div className="text-center py-12">
           <div className="text-gray-400 text-6xl mb-4">⚠️</div>
           <div className="text-gray-500 text-lg mb-4">Product not found</div>
-          <button onClick={() => navigate("home")} className="btn-primary">
-            Back to Discovery
+          <button onClick={() => navigate("cart")} className="btn-primary">
+            Back to Cart
           </button>
         </div>
       </div>
@@ -300,11 +452,11 @@ const OrderDetails = () => {
     <div className="p-6 max-w-6xl mx-auto">
       <div className="mb-6">
         <button
-          onClick={() => navigate("home")}
+          onClick={() => navigate("products")}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Discovery
+          Back to Products
         </button>
         <div className="flex items-center gap-3">
           <div className="p-2 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
@@ -758,21 +910,43 @@ const OrderDetails = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="space-y-3">
+          <div className="space-y-4">
+            {/* Primary Action - Add to Cart with Recommendations or Direct to Cart for Cross Connect */}
             <button
-              onClick={handleAddToCart}
-              className="w-full btn-primary flex items-center justify-center gap-2"
+              onClick={isCrossConnectProduct() ? handleAddToCartDirectly : handleAddToCartWithRecommendations}
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
-              <ShoppingCart className="w-4 h-4" />
-              Add to Cart
+              <ShoppingCart className="w-5 h-5" />
+              {isCrossConnectProduct() ? "Add to Cart" : "Add to Cart & See Recommendations"}
             </button>
-            <button
-              onClick={handleAddToPackage}
-              className="w-full btn-secondary flex items-center justify-center gap-2"
-            >
-              <Package className="w-4 h-4" />
-              Add to Package
-            </button>
+            
+            {/* Secondary Options */}
+            {!isCrossConnectProduct() && (
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={handleAddToCartDirectly}
+                  className="w-full bg-white border-2 border-gray-300 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-200 flex items-center justify-center gap-2 text-sm"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  Go to Cart
+                </button>
+              </div>
+            )}
+            
+            {/* Information Text */}
+            <div className="text-center">
+              <p className="text-xs text-gray-500 leading-relaxed">
+                {isCrossConnectProduct() ? (
+                  <>
+                    � <strong>Cross Connect:</strong> Product will be added directly to your cart for quick checkout.
+                  </>
+                ) : (
+                  <>
+                    �💡 <strong>Recommended:</strong> See complementary add-ons that work perfectly with your configuration, or go directly to cart if you prefer.
+                  </>
+                )}
+              </p>
+            </div>
           </div>
         </div>
       </div>

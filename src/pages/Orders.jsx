@@ -211,7 +211,7 @@ const Orders = () => {
                         order.items?.[0]?.configurationData?.location ||
                         order.items?.[0]?.configuration?.ibx ||
                         order.location ||
-                        "SV1";
+                        "MB2";
 
                       // Calculate estimated completion date (30 days from creation for demo)
                       const estimatedCompletion = new Date(

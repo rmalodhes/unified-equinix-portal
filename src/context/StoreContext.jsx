@@ -27,7 +27,7 @@ const initialState = {
   packages: [],
   quotes: [],
   orders: [],
-  selectedIBX: "SV1",
+  selectedIBX: "MB2",
   selectedCage: "A-101",
 };
 
@@ -67,6 +67,15 @@ const storeReducer = (state, action) => {
         ...state,
         cart: state.cart.filter((item) => item.id !== action.payload),
       };
+    case "UPDATE_CART_QUANTITY":
+      return {
+        ...state,
+        cart: state.cart.map((item) =>
+          item.id === action.payload.id
+            ? { ...item, qty: action.payload.quantity }
+            : item
+        ),
+      };
     case "ADD_TO_PACKAGES":
       return {
         ...state,
@@ -76,6 +85,15 @@ const storeReducer = (state, action) => {
       return {
         ...state,
         packages: state.packages.filter((item) => item.id !== action.payload),
+      };
+    case "UPDATE_PACKAGES_QUANTITY":
+      return {
+        ...state,
+        packages: state.packages.map((item) =>
+          item.id === action.payload.id
+            ? { ...item, qty: action.payload.quantity }
+            : item
+        ),
       };
     case "CREATE_QUOTE": {
       const generateQuoteId = () => {
@@ -181,6 +199,8 @@ export const StoreProvider = ({ children }) => {
   const navigate = (page) => {
     const routes = {
       home: "/",
+      products: "/products",
+      solutions: "/solutions",
       cart: "/cart",
       packages: "/packages",
       quotes: "/quotes",
@@ -201,6 +221,10 @@ export const StoreProvider = ({ children }) => {
       dispatch({ type: "ADD_TO_PACKAGES", payload: item }),
     removeFromPackages: (id) =>
       dispatch({ type: "REMOVE_FROM_PACKAGES", payload: id }),
+    updateCartQuantity: (id, quantity) =>
+      dispatch({ type: "UPDATE_CART_QUANTITY", payload: { id, quantity } }),
+    updatePackagesQuantity: (id, quantity) =>
+      dispatch({ type: "UPDATE_PACKAGES_QUANTITY", payload: { id, quantity } }),
     createQuote: (itemsOrQuote) =>
       dispatch({
         type: "CREATE_QUOTE",

@@ -20,6 +20,7 @@ const Cart = () => {
     createQuote,
     removeFromCart,
     removeFromPackages,
+    clearCart,
   } = useStore();
   const [expandedItems, setExpandedItems] = useState(new Set());
 
@@ -125,6 +126,7 @@ const Cart = () => {
     };
 
     createQuote(quote);
+    clearCart();
     navigate(`/quoteDetails?id=${quoteId}`);
   };
 
@@ -185,28 +187,133 @@ const Cart = () => {
     }).format(value);
   };
 
+  // Check if Secure Cabinet Express is in cart
+  const hasSecureCabinet = allItems.some(item => 
+    item.name && item.name.toLowerCase().includes('secure cabinet express')
+  );
+
+  // Recommendations data
+  const recommendations = [
+    {
+      id: 'equinix-fabric-port',
+      name: 'Equinix Fabric Port',
+      description: 'High-performance network connectivity port',
+      originalPrice: 1200,
+      discountedPrice: 960,
+      discount: 20,
+      badge: 'POPULAR',
+      badgeColor: 'bg-orange-500',
+      details: [
+        { label: 'Type', value: 'Primary' },
+        { label: 'Bandwidth', value: '10 Gbps' },
+        { label: 'Interface type', value: '10G SMF' },
+        { label: 'Encapsulation', value: 'dot1q (TPID 0x8100)' },
+        { label: 'Cloud Package Type', value: 'Standard' }
+      ],
+      icon: '🌐'
+    },
+    {
+      id: 'cross-connect-package',
+      name: 'Cross Connect Package',
+      description: 'Direct physical connections between equipment',
+      originalPrice: 1000,
+      discountedPrice: 750,
+      discount: 25,
+      quantity: 10,
+      badge: 'BEST VALUE',
+      badgeColor: 'bg-green-500',
+      details: [
+        { label: 'Package', value: '10 Units' },
+        { label: 'Type', value: 'Fiber Cross Connect' },
+        { label: 'Media Type', value: 'Single Mode Fiber' },
+        { label: 'Installation', value: 'Express Install' }
+      ],
+      icon: '🔌'
+    },
+    {
+      id: 'smart-hands-support',
+      name: 'Smart Hands Support Plan',
+      description: '24/7 remote hands and technical support services',
+      originalPrice: 800,
+      discountedPrice: 640,
+      discount: 20,
+      quantity: 20,
+      badge: 'RECOMMENDED',
+      badgeColor: 'bg-blue-500',
+      details: [
+        { label: 'Coverage', value: '24/7 Support' },
+        { label: 'Response Time', value: '< 2 hours' },
+        { label: 'Units', value: '20 Hours/Month' },
+        { label: 'Priority', value: 'Business Critical' }
+      ],
+      icon: '🛠️'
+    }
+  ];
+
+  const { addToCart } = useStore();
+
+  const handleAddRecommendation = (recommendation) => {
+    // Check if item already exists in cart
+    const existingItem = cart.find(item => item.id === recommendation.id);
+    if (existingItem) {
+      // If item exists, you might want to show a message or increase quantity
+      // For now, we'll just return without adding
+      return;
+    }
+
+    // Calculate proper pricing structure
+    const setupFee = 100;
+    const monthlyPrice = recommendation.discountedPrice;
+    
+    const cartItem = {
+      id: recommendation.id,
+      name: recommendation.name,
+      description: recommendation.description,
+      price: monthlyPrice, // Monthly recurring price
+      originalPrice: recommendation.originalPrice,
+      category: 'Recommended Add-on',
+      qty: recommendation.quantity || 1,
+      
+      // Proper pricing structure for cart calculations
+      oneTimePrice: setupFee,
+      unitPrice: {
+        oneTime: setupFee,
+        recurring: monthlyPrice
+      },
+      
+      // Essential product details for display
+      essentialDetails: recommendation.details,
+      
+      // Discount information
+      hasDiscount: true,
+      discountPercentage: recommendation.discount,
+      discounts: [{
+        type: 'volume',
+        description: `${recommendation.discount}% off regular price`,
+        amount: recommendation.originalPrice - recommendation.discountedPrice
+      }],
+      
+      // Additional metadata for better cart display
+      isRecommended: true,
+      addedAt: new Date().toISOString(),
+      icon: recommendation.icon
+    };
+    
+    addToCart(cartItem);
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 p-4 sm:p-6">
-      <div className="max-w-7xl mx-auto p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/40 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
           <button
-            onClick={() => navigate("home")}
+            onClick={() => navigate("products")}
             className="flex items-center gap-2 text-slate-600 hover:text-blue-600 mb-4 transition-all duration-200 font-medium group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            Back to Discovery
+            Back to Products
           </button>
-          <div className="flex items-center gap-3">
-            <div className="p-2">
-              <ShoppingCart className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
-                Shopping Cart ({allItems.length})
-              </h1>
-            </div>
-          </div>
         </div>
 
         {allItems.length === 0 ? (
@@ -228,13 +335,15 @@ const Cart = () => {
             </button>
           </div>
         ) : (
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Cart Items Section - 70% */}
-            <div className="lg:w-[70%]">
-              <h2 className="text-lg font-bold text-slate-800 mb-4">
-                Cart Items
-              </h2>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+            {/* Cart Items Section - 8 columns */}
+            <div className="lg:col-span-8 space-y-6 order-2 lg:order-1">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/30">
+                <h2 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+                  <ShoppingCart className="w-5 h-5 text-blue-600" />
+                  Your Items ({allItems.length})
+                </h2>
+                <div className="space-y-4">
                 {allItems.map((item, index) => (
                   <div
                     key={index}
@@ -242,7 +351,7 @@ const Cart = () => {
                   >
                     {/* Discount Badge */}
                     {item.hasDiscount && (
-                      <div className="absolute top-4 right-4 z-10">
+                      <div className="absolute top-3 right-12 sm:top-4 sm:right-16 z-10">
                         <div className="bg-gradient-to-r from-emerald-500 to-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg flex items-center gap-1">
                           <Tag className="w-3 h-3" />
                           15% Off
@@ -250,18 +359,18 @@ const Cart = () => {
                       </div>
                     )}
 
-                    <div className="p-6 relative">
+                    <div className="p-4 sm:p-6 relative">
                       {/* Delete Button - Top Right */}
                       <button
                         onClick={() => handleRemoveItem(index)}
-                        className="absolute top-4 right-4 p-2 text-slate-400 hover:text-red-500 rounded-xl hover:bg-red-50 transition-all duration-200"
+                        className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 text-slate-400 hover:text-red-500 rounded-xl hover:bg-red-50 transition-all duration-200"
                         title="Remove item"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
 
                       {/* Product Header */}
-                      <div className="flex gap-4 mb-4 pr-12">
+                      <div className="flex gap-3 sm:gap-4 mb-4 pr-8 sm:pr-12">
                         {/* Product Icon */}
                         <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg">
                           <svg
@@ -287,48 +396,85 @@ const Cart = () => {
                             {(() => {
                               const configs = [];
 
-                              // Priority order for different item types
-                              const priorityFields = [
-                                "cabinetDimensions",
-                                "drawCap",
-                                "circuitType",
-                                "pduQuantity",
-                                "packageType",
-                                "serviceLevel",
-                                "term",
-                                "bandwidth",
-                              ];
-
-                              // Find the first 2 available configuration items based on priority
-                              for (const field of priorityFields) {
-                                if (configs.length >= 2) break;
-
-                                const value = item.selectedOptions?.[field];
-                                if (value) {
-                                  const label =
-                                    value.label || value.id || value;
-                                  const displayName = field
-                                    .replace(/([A-Z])/g, " $1")
-                                    .replace(/^./, (str) => str.toUpperCase());
-
+                              // First try essentialDetails from template
+                              if (item.essentialDetails && item.essentialDetails.length > 0) {
+                                const displayDetails = item.essentialDetails.slice(0, 2);
+                                displayDetails.forEach((detail, index) => {
                                   configs.push(
                                     <div
-                                      key={field}
+                                      key={`essential-${index}`}
                                       className="flex items-center gap-2 text-xs"
                                     >
                                       <span className="text-slate-500">
-                                        {displayName}:
+                                        {detail.label}:
                                       </span>
                                       <span className="font-medium text-slate-700 bg-slate-100 px-2 py-1 rounded">
-                                        {label}
+                                        {detail.value}
+                                      </span>
+                                    </div>
+                                  );
+                                });
+                              }
+
+                              // If still need more configs, use selectedOptions
+                              if (configs.length < 2) {
+                                const priorityFields = [
+                                  "cabinetDimensions",
+                                  "drawCap",
+                                  "circuitType",
+                                  "pduQuantity",
+                                  "packageType",
+                                  "serviceLevel",
+                                  "term",
+                                  "bandwidth",
+                                ];
+
+                                for (const field of priorityFields) {
+                                  if (configs.length >= 2) break;
+
+                                  const value = item.selectedOptions?.[field];
+                                  if (value) {
+                                    const label =
+                                      value.label || value.id || value;
+                                    const displayName = field
+                                      .replace(/([A-Z])/g, " $1")
+                                      .replace(/^./, (str) => str.toUpperCase());
+
+                                    configs.push(
+                                      <div
+                                        key={field}
+                                        className="flex items-center gap-2 text-xs"
+                                      >
+                                        <span className="text-slate-500">
+                                          {displayName}:
+                                        </span>
+                                        <span className="font-medium text-slate-700 bg-slate-100 px-2 py-1 rounded">
+                                          {label}
+                                        </span>
+                                      </div>
+                                    );
+                                  }
+                                }
+                              }
+
+                              // If still no configs, try location and template name
+                              if (configs.length < 2) {
+                                if (item.templateName && configs.length < 2) {
+                                  configs.push(
+                                    <div
+                                      key="template"
+                                      className="flex items-center gap-2 text-xs"
+                                    >
+                                      <span className="text-slate-500">
+                                        Template:
+                                      </span>
+                                      <span className="font-medium text-slate-700 bg-slate-100 px-2 py-1 rounded">
+                                        {item.templateName}
                                       </span>
                                     </div>
                                   );
                                 }
-                              }
-
-                              // If no selectedOptions, try location and bandwidth
-                              if (configs.length < 2) {
+                                
                                 if (item.location && configs.length < 2) {
                                   configs.push(
                                     <div
@@ -340,22 +486,6 @@ const Cart = () => {
                                       </span>
                                       <span className="font-medium text-slate-700 bg-slate-100 px-2 py-1 rounded">
                                         {item.location}
-                                      </span>
-                                    </div>
-                                  );
-                                }
-
-                                if (item.bandwidth && configs.length < 2) {
-                                  configs.push(
-                                    <div
-                                      key="bandwidth"
-                                      className="flex items-center gap-2 text-xs"
-                                    >
-                                      <span className="text-slate-500">
-                                        Bandwidth:
-                                      </span>
-                                      <span className="font-medium text-slate-700 bg-slate-100 px-2 py-1 rounded">
-                                        {item.bandwidth}
                                       </span>
                                     </div>
                                   );
@@ -428,23 +558,21 @@ const Cart = () => {
                       </div>
 
                       {/* Main Content Area */}
-                      <div className="flex justify-end items-end mb-4">
+                      <div className="flex flex-col sm:flex-row sm:justify-end sm:items-end mb-4 gap-3 sm:gap-0">
                         {/* Pricing - Bottom Right */}
-                        <div className="text-right">
+                        <div className="text-left sm:text-right">
+                          <div className="text-sm text-slate-600">
+                            One-time:{" "}
+                            <span className="font-bold text-blue-600">
+                              {fmt(item.totalPrice.oneTime)}
+                            </span>
+                          </div>
                           <div className="text-sm text-slate-600">
                             Monthly:{" "}
-                            <span className="font-bold text-blue-600">
+                            <span className="font-bold text-emerald-600">
                               {fmt(item.totalPrice.recurring)}
                             </span>
                           </div>
-                          {item.totalPrice.oneTime > 0 && (
-                            <div className="text-sm text-slate-600">
-                              One-time:{" "}
-                              <span className="font-bold text-blue-600">
-                                {fmt(item.totalPrice.oneTime)}
-                              </span>
-                            </div>
-                          )}
                         </div>
                       </div>
                       <div className="border-t border-slate-200 pt-4 mt-4"></div>
@@ -468,8 +596,9 @@ const Cart = () => {
                         <div className="pt-4 mt-4">
                           {/* Comprehensive Configuration Details */}
                           <div className="space-y-4">
-                            {/* Physical Specifications (for SCE/Infrastructure) */}
-                            {(item.selectedOptions?.cabinetDimensions ||
+                            {/* Physical Specifications - Show all essentialDetails or selectedOptions */}
+                            {((item.essentialDetails && item.essentialDetails.length > 0) ||
+                              item.selectedOptions?.cabinetDimensions ||
                               item.selectedOptions?.drawCap ||
                               item.selectedOptions?.circuitType ||
                               item.selectedOptions?.pduQuantity) && (
@@ -491,73 +620,73 @@ const Cart = () => {
                                   Physical Specifications
                                 </h4>
                                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-4 space-y-3">
-                                  {item.selectedOptions?.cabinetDimensions && (
-                                    <div className="flex justify-between text-sm">
+                                  {/* Show essential details first */}
+                                  {item.essentialDetails && item.essentialDetails.map((detail, index) => (
+                                    <div key={`detail-${index}`} className="flex justify-between text-sm">
                                       <span className="text-slate-600 font-medium">
-                                        Cabinet Dimensions:
+                                        {detail.label}:
                                       </span>
                                       <span className="text-slate-800 font-semibold">
-                                        {
-                                          item.selectedOptions.cabinetDimensions
-                                            .label
-                                        }
+                                        {detail.value}
                                       </span>
                                     </div>
-                                  )}
+                                  ))}
 
-                                  {item.selectedOptions?.drawCap && (
-                                    <div className="flex justify-between text-sm">
-                                      <span className="text-slate-600 font-medium">
-                                        Draw Cap
-                                      </span>
-                                      <span className="text-slate-800 font-semibold">
-                                        {item.selectedOptions.drawCap.label}
-                                      </span>
-                                    </div>
-                                  )}
+                                  {/* Fallback to selectedOptions if no essentialDetails */}
+                                  {(!item.essentialDetails || item.essentialDetails.length === 0) && (
+                                    <>
+                                      {item.selectedOptions?.cabinetDimensions && (
+                                        <div className="flex justify-between text-sm">
+                                          <span className="text-slate-600 font-medium">
+                                            Cabinet Dimensions:
+                                          </span>
+                                          <span className="text-slate-800 font-semibold">
+                                            {typeof item.selectedOptions.cabinetDimensions === 'object' 
+                                              ? item.selectedOptions.cabinetDimensions.label || item.selectedOptions.cabinetDimensions
+                                              : item.selectedOptions.cabinetDimensions}
+                                          </span>
+                                        </div>
+                                      )}
 
-                                  {item.selectedOptions?.circuitType && (
-                                    <div className="flex justify-between text-sm">
-                                      <span className="text-slate-600 font-medium">
-                                        Circuit Type:
-                                      </span>
-                                      <span className="text-slate-800 font-semibold">
-                                        {item.selectedOptions.circuitType.label}
-                                      </span>
-                                    </div>
-                                  )}
+                                      {item.selectedOptions?.drawCap && (
+                                        <div className="flex justify-between text-sm">
+                                          <span className="text-slate-600 font-medium">
+                                            Draw Cap:
+                                          </span>
+                                          <span className="text-slate-800 font-semibold">
+                                            {typeof item.selectedOptions.drawCap === 'object' 
+                                              ? item.selectedOptions.drawCap.label || item.selectedOptions.drawCap
+                                              : item.selectedOptions.drawCap}
+                                          </span>
+                                        </div>
+                                      )}
 
-                                  {item.selectedOptions?.pduQuantity && (
-                                    <div className="flex justify-between text-sm">
-                                      <span className="text-slate-600 font-medium">
-                                        PDU Quantity:
-                                      </span>
-                                      <span className="text-slate-800 font-semibold">
-                                        {item.selectedOptions.pduQuantity.label}
-                                      </span>
-                                    </div>
-                                  )}
+                                      {item.selectedOptions?.circuitType && (
+                                        <div className="flex justify-between text-sm">
+                                          <span className="text-slate-600 font-medium">
+                                            Circuit Type:
+                                          </span>
+                                          <span className="text-slate-800 font-semibold">
+                                            {typeof item.selectedOptions.circuitType === 'object' 
+                                              ? item.selectedOptions.circuitType.label || item.selectedOptions.circuitType
+                                              : item.selectedOptions.circuitType}
+                                          </span>
+                                        </div>
+                                      )}
 
-                                  {item.selectedOptions?.rackUnits && (
-                                    <div className="flex justify-between text-sm">
-                                      <span className="text-slate-600 font-medium">
-                                        Rack Units:
-                                      </span>
-                                      <span className="text-slate-800 font-semibold">
-                                        {item.selectedOptions.rackUnits.label}
-                                      </span>
-                                    </div>
-                                  )}
-
-                                  {item.selectedOptions?.powerType && (
-                                    <div className="flex justify-between text-sm">
-                                      <span className="text-slate-600 font-medium">
-                                        Power Type:
-                                      </span>
-                                      <span className="text-slate-800 font-semibold">
-                                        {item.selectedOptions.powerType.label}
-                                      </span>
-                                    </div>
+                                      {item.selectedOptions?.pduQuantity && (
+                                        <div className="flex justify-between text-sm">
+                                          <span className="text-slate-600 font-medium">
+                                            PDU Quantity:
+                                          </span>
+                                          <span className="text-slate-800 font-semibold">
+                                            {typeof item.selectedOptions.pduQuantity === 'object' 
+                                              ? item.selectedOptions.pduQuantity.label || item.selectedOptions.pduQuantity
+                                              : item.selectedOptions.pduQuantity}
+                                          </span>
+                                        </div>
+                                      )}
+                                    </>
                                   )}
                                 </div>
                               </div>
@@ -674,43 +803,97 @@ const Cart = () => {
                     </div>
                   </div>
                 ))}
+                </div>
               </div>
             </div>
 
-            {/* Order Summary Section - 30% */}
-            <div className="lg:w-[30%] flex-shrink-0">
-              <div className="bg-white/50 backdrop-blur-sm rounded-xl shadow-lg border border-white/30 p-5 sticky top-6">
-                <h3 className="text-lg font-bold text-slate-800 mb-3">
-                  Order Summary
-                </h3>
-                <div className="space-y-3">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Total Items:</span>
-                      <span className="font-semibold">{allItems.length}</span>
+            {/* Order Summary Section - 4 columns */}
+            <div className="lg:col-span-4 order-1 lg:order-2">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/30 p-4 sm:p-6 lg:sticky lg:top-6">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
+                    <FileText className="w-4 h-4 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-800">
+                    Order Summary
+                  </h3>
+                </div>
+                <div className="space-y-6">
+                  {/* Items Summary */}
+                  <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-slate-600 font-medium">Cart Items</span>
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-bold">
+                        {allItems.length}
+                      </span>
                     </div>
-                    {totals.oneTime > 0 && (
-                      <div className="flex justify-between">
-                        <span className="text-slate-600">Total One-time:</span>
-                        <span className="font-bold text-blue-600">
+                    <div className="text-xs text-slate-500">
+                      {allItems.length === 1 ? '1 item' : `${allItems.length} items`} in your cart
+                    </div>
+                  </div>
+
+                  {/* Pricing Breakdown */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-bold text-slate-700 uppercase tracking-wide">
+                      Pricing Summary
+                    </h4>
+                    
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center p-3 bg-blue-50/50 rounded-lg">
+                        <div>
+                          <span className="text-slate-600 font-medium">One-time fee </span>
+                          <div className="text-xs text-slate-500">Setup & Installation</div>
+                        </div>
+                        <span className="font-bold text-blue-600 text-lg">
                           {fmt(totals.oneTime)}
                         </span>
                       </div>
-                    )}
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Total Monthly:</span>
-                      <span className="font-bold text-emerald-600">
-                        {fmt(totals.recurring)}/mo
-                      </span>
+                      
+                      <div className="flex justify-between items-center p-3 bg-emerald-50/50 rounded-lg">
+                        <div>
+                          <span className="text-slate-600 font-medium">Monthly Recurring</span>
+                          <div className="text-xs text-slate-500">Ongoing service costs</div>
+                        </div>
+                        <span className="font-bold text-emerald-600 text-lg">
+                          {fmt(totals.recurring)}/mo
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div className="pt-3 border-t border-slate-200">
+
+                  {/* Total Section */}
+                  <div className="bg-gradient-to-r from-slate-800 to-slate-700 rounded-xl p-4 text-white">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <div className="text-slate-300 text-sm font-medium">Total Cost</div>
+                        <div className="text-xs text-slate-400">First month + setup</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold">
+                          {fmt(totals.oneTime + totals.recurring)}
+                        </div>
+                        <div className="text-slate-300 text-sm">
+                          Then {fmt(totals.recurring)}/month
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Action Buttons */}
+                  <div className="space-y-3">
                     <button
                       onClick={handleGenerateQuote}
-                      className="w-full px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                      className="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                     >
                       <FileText className="w-5 h-5" />
                       Generate Quote
+                    </button>
+                    
+                    <button
+                      onClick={() => navigate('products')}
+                      className="w-full px-6 py-3 bg-white border-2 border-slate-300 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 hover:border-blue-300 hover:text-blue-700 transition-all duration-200 flex items-center justify-center gap-2"
+                    >
+                      <ShoppingCart className="w-4 h-4" />
+                      Add More Items
                     </button>
                   </div>
                 </div>

@@ -9,11 +9,11 @@ const Profile = () => {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-6">
         <button
-          onClick={() => navigate("home")}
+          onClick={() => navigate("products")}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Discovery
+          Back to Products
         </button>
         <div className="flex items-center gap-3">
           <User className="w-8 h-8 text-gray-600" />
@@ -70,7 +70,7 @@ const Profile = () => {
                 <h4 className="font-medium mb-2">IBX Access Permissions</h4>
                 <div className="flex flex-wrap gap-2">
                   <span className="px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded">
-                    SV1
+                    MB2
                   </span>
                   <span className="px-2 py-1 bg-blue-100 text-blue-800 text-sm rounded">
                     SV5

@@ -21,11 +21,11 @@ const Packages = () => {
     <div className="p-6 max-w-6xl mx-auto">
       <div className="mb-6">
         <button
-          onClick={() => navigate("home")}
+          onClick={() => navigate("products")}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-4 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Discovery
+          Back to Products
         </button>
         <div className="flex items-center gap-3">
           <Package className="w-8 h-8 text-purple-600" />
